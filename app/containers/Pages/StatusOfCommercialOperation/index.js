@@ -2,23 +2,19 @@ import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
 import { PapperBlock } from 'dan-components';
 import brand from 'dan-api/dummy/brand';
-import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import MaterialTable from 'material-table';
 import { isString } from 'lodash';
-import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import notification from '../../../components/Notification/Notification';
-// import styles from '../StaffContract/people-jss';
 import {
   addCommercialOperationStatus, deleteCommercialOperationStatus,
   getAllCommercialOperationStatus, updateCommercialOperationStatus
 } from '../../../redux/commercialOperationStatus/actions';
 import { ThemeContext } from '../../App/ThemeWrapper';
 
-const styles = {};
-const useStyles = makeStyles();
 class StatusOfCommercialOperation extends React.Component {
   constructor(props) {
     super(props);
@@ -37,14 +33,27 @@ class StatusOfCommercialOperation extends React.Component {
           // eslint-disable-next-line no-useless-concat
           title: 'Code' + '*',
           field: 'code',
-          /* cellStyle: { width: 100, maxWidth: 100 },
-          headerStyle: { width: 130, maxWidth: 130 } */
+          editComponent: props => (
+            <TextField
+              value={props.value}
+              inputProps={{ maxLength: 10 }}
+              onChange={(event) => { props.onChange(event.target.value); }}
+            />
+          )
         },
         {
           // eslint-disable-next-line no-useless-concat
           title: 'Percentage in % ' + '*',
           field: 'percentage',
-          type: 'numeric',
+
+          editComponent: props => (
+            <TextField
+              value={props.value}
+              type="number"
+              inputProps={{ min: 0, max: 100 }}
+              onChange={(event) => { props.onChange(event.target.value); }}
+            />
+          )
           /* cellStyle: { width: 155, maxWidth: 155 },
           headerStyle: { width: 180, maxWidth: 180 } */
         },
@@ -64,6 +73,10 @@ class StatusOfCommercialOperation extends React.Component {
     changeTheme('redTheme');
     getAllCommercialOperationStatus();
   }
+
+  onChange = (ev) => {
+    this.setState({ code: ev });
+  };
 
   render() {
     const title = brand.name + ' - Status Of Commercial Operation';
@@ -99,8 +112,8 @@ class StatusOfCommercialOperation extends React.Component {
             columns={columns}
             data={allCommercialOperationStatuss && allCommercialOperationStatuss}
             options={{
-              exportFileName: 'Commercial Operation List',
-              // filtering: true,
+              exportFileName: 'status of Commercial operation',
+              filtering: true,
               // draggable: true,
               exportButton: exporte,
               pageSize: 10,
@@ -162,7 +175,6 @@ class StatusOfCommercialOperation extends React.Component {
 }
 StatusOfCommercialOperation.propTypes = {
   // eslint-disable-next-line react/no-unused-prop-types
-  classes: PropTypes.object.isRequired,
   getAllCommercialOperationStatus: PropTypes.func.isRequired,
   allCommercialOperationStatuss: PropTypes.array.isRequired,
   commercialOperationStatusResponse: PropTypes.string.isRequired,
@@ -193,6 +205,5 @@ const StatusOfCommercialOperationMapped = connect(
 
 export default () => {
   const { changeTheme } = useContext(ThemeContext);
-  const classes = useStyles();
-  return <StatusOfCommercialOperationMapped changeTheme={changeTheme} classes={classes} />;
+  return <StatusOfCommercialOperationMapped changeTheme={changeTheme} />;
 };

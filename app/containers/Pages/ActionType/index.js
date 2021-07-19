@@ -18,7 +18,7 @@ class TypeOfCurrencyManagement extends React.Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        <PapperBlock title="Commercial Action Type Management" icon="ios-cash" noMargin overflowX>
+        <PapperBlock title="Commercial Action Type Management" icon="ios-cash" desc="">
           <TypeOfCurrencyBlock />
         </PapperBlock>
       </div>

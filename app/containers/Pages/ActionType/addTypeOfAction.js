@@ -1,19 +1,17 @@
 import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
-import { Grid, TextField } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import brand from 'dan-api/dummy/brand';
 import { PapperBlock } from 'dan-components';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import { connect } from 'react-redux';
 import history from '../../../utils/history';
 import ActionTypeService from '../../Services/ActionTypeService';
-
 import { ThemeContext } from '../../App/ThemeWrapper';
-
-const useStyles = makeStyles();
+import notification from '../../../components/Notification/Notification';
 
 class AddTypeOfAction extends React.Component {
   constructor(props) {
@@ -40,9 +38,9 @@ class AddTypeOfAction extends React.Component {
         typeName, description, percentage
       };
       ActionTypeService.saveActionType(ActionType).then(result => {
-        console.log(result);
+        notification('success', 'Added');
         history.push('/app/gestion-commercial/Action-Type');
-      });
+      }, () => { notification('danger', 'duplicated'); });
     }
 
     handleGoBack = () => {
@@ -54,7 +52,6 @@ class AddTypeOfAction extends React.Component {
     };
 
     render() {
-      console.log(this.state);
       const title = brand.name + ' - Add New Commercial Action Type';
       const { desc } = brand;
       // eslint-disable-next-line react/prop-types
@@ -124,9 +121,9 @@ class AddTypeOfAction extends React.Component {
                   name="percentage"
                   value={percentage}
                   type="number"
+                  inputProps={{ min: 0, max: 100 }}
                   required
                   fullWidth
-                  multiline
                   onChange={this.handleChange}
                 />
               </Grid>
@@ -149,6 +146,5 @@ const AddTypeOfActionMapped = connect()(AddTypeOfAction);
 
 export default () => {
   const { changeTheme } = useContext(ThemeContext);
-  const classes = useStyles();
-  return <AddTypeOfActionMapped changeTheme={changeTheme} classes={classes} />;
+  return <AddTypeOfActionMapped changeTheme={changeTheme} />;
 };

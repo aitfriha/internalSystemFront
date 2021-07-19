@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { Helmet } from 'react-helmet';
 import { PapperBlock } from 'dan-components';
 import brand from 'dan-api/dummy/brand';
-import withStyles from '@material-ui/core/styles/withStyles';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -12,20 +11,14 @@ import {
   Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete';
-import styles from '../Clients/clients-jss';
 import './zaid.css';
 import notification from '../../../components/Notification/Notification';
-// import styles from '../StaffContract/people-jss';
 import {
   addCommercialServiceType, deleteCommercialServiceType,
   getAllCommercialServiceType,
   updateCommercialServiceType, updateDeleteCommercialServiceType
 } from '../../../redux/serviceType/actions';
-import EditServiceType from './EditServiceType';
-import { getAllClient } from '../../../redux/client/actions';
 import { ThemeContext } from '../../App/ThemeWrapper';
-import { makeStyles } from '@material-ui/core/styles';
-const useStyles = makeStyles();
 class serviceType extends React.Component {
   constructor(props) {
     super(props);
@@ -150,8 +143,6 @@ class serviceType extends React.Component {
     if (thelogedUser.userRoles[0].actionsNames.commercial_serviceType_delete) {
       deletebutton = false;
     }
-    console.log(operationCommercial[0]);
-
     return (
       <div>
         <Helmet>
@@ -169,16 +160,16 @@ class serviceType extends React.Component {
             columns={columns}
             data={allCommercialServiceType && allCommercialServiceType}
             options={{
-              exportFileName: 'Commercial Operation List',
-              // filtering: true,
+              exportFileName: 'service type list',
+              filtering: true,
               // draggable: true,
               exportButton,
               pageSize: 10,
               // grouping: true,
               actionsCellStyle: {
-                //  paddingLeft: 30,
-                // width: 120,
-                //   maxWidth: 120,
+                paddingLeft: 30,
+                width: 120,
+                maxWidth: 120,
               },
               actionsColumnIndex: -1
             }}
@@ -255,13 +246,12 @@ class serviceType extends React.Component {
                     value={operationCommercial}
                     onChange={this.handleChange}
                     required
-                    className={classes.textField}
                   />
 
                 ) : null}
-                <Autocomplete style={{marginTop:'15px'}}
+                <Autocomplete
+                  style={{ marginTop: '15px' }}
                   multiple
-                  className={classes.textField}
                   id="combo-box-demo"
                   options={allCommercialServiceType}
                   getOptionLabel={option => option.name}
@@ -299,7 +289,6 @@ class serviceType extends React.Component {
 }
 serviceType.propTypes = {
   // eslint-disable-next-line react/no-unused-prop-types
-  classes: PropTypes.object.isRequired,
   getAllCommercialServiceType: PropTypes.func.isRequired,
   allCommercialServiceType: PropTypes.array.isRequired,
   commercialServiceTypeResponse: PropTypes.string.isRequired,
@@ -332,6 +321,5 @@ const ServiceTypeMapped = connect(
 
 export default () => {
   const { changeTheme } = useContext(ThemeContext);
-  const classes = useStyles();
-  return <ServiceTypeMapped changeTheme={changeTheme} classes={classes} />;
+  return <ServiceTypeMapped changeTheme={changeTheme}  />;
 };

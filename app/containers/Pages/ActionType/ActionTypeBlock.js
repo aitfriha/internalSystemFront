@@ -16,14 +16,14 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
+import Autocomplete from '@material-ui/lab/Autocomplete/Autocomplete';
 import CustomToolbar from '../../../components/CustomToolbar/CustomToolbar';
 import ActionTypeService from '../../Services/ActionTypeService';
 import { ThemeContext } from '../../App/ThemeWrapper';
 import CommercialActionService from '../../Services/CommercialActionService';
+import notification from '../../../components/Notification/Notification';
 
-const useStyles = makeStyles();
 
 class ActionTypeBlock extends React.Component {
   constructor(props) {
@@ -34,6 +34,8 @@ class ActionTypeBlock extends React.Component {
       actionTypeId: '',
       id: '',
       newActionTypeId: '',
+      actionTypeTodelete: '',
+      popUpDelete: false,
       datas: [],
       commercialActions: [],
       newTab: [],
@@ -43,6 +45,17 @@ class ActionTypeBlock extends React.Component {
       description: '',
       percentage: 0,
       columns: [
+        {
+          label: 'actionTypeId',
+          name: 'actionTypeId',
+          options: {
+            filter: false,
+            display: false,
+            sort: false,
+            download: false
+
+          }
+        },
         {
           label: 'Action Type Name',
           name: 'typeName',
@@ -68,6 +81,7 @@ class ActionTypeBlock extends React.Component {
           label: 'Actions',
           name: 'Actions',
           options: {
+            download: false,
             filter: false,
             sort: false,
             empty: true,
@@ -79,7 +93,7 @@ class ActionTypeBlock extends React.Component {
                   </IconButton>
                 ) : null}
                 {thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_delete ? (
-                  <IconButton onClick={() => this.handleDelete(tableMeta)}>
+                  <IconButton onClick={() => this.handleDeleteDialog(tableMeta)}>
                     <DeleteIcon color="primary" />
                   </IconButton>
                 ) : null}
@@ -105,47 +119,60 @@ class ActionTypeBlock extends React.Component {
     changeTheme('redTheme');
   }
 
+
     // eslint-disable-next-line react/sort-comp
     handleDetails = (tableMeta) => {
-      const index = tableMeta.tableState.page * tableMeta.tableState.rowsPerPage
-            + tableMeta.rowIndex;
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-      const id = this.state.datas[index].actionTypeId;
-      ActionTypeService.getActionTypeById(id).then(result => {
-        this.setState({
-          actionTypeId: id,
-          typeName: result.data.typeName,
-          description: result.data.description,
-          percentage: result.data.percentage,
-          openPopUp: true
-        });
+      // console.log(tableMeta);
+      // const index = tableMeta.tableState.page * tableMeta.tableState.rowsPerPage
+      //    + tableMeta.rowIndex;
+      // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
+      // const id = this.state.datas[index].actionTypeId;
+      // ActionTypeService.getActionTypeById(id).then(result => {
+      this.setState({
+        actionTypeId: tableMeta.rowData[0],
+        typeName: tableMeta.rowData[1],
+        description: tableMeta.rowData[2],
+        percentage: tableMeta.rowData[3],
+        openPopUp: true
       });
+      // });
     }
 
-    handleDelete = (tableMeta) => {
-      let test = false;
+  handleDeleteDialog = (tableMeta) => {
+    console.log(tableMeta);
+    this.setState({ actionTypeTodelete: tableMeta.rowData[0], popUpDelete: true });
+    /*    let test = false;
       let newTab = [];
       const index = tableMeta.tableState.page * tableMeta.tableState.rowsPerPage
             + tableMeta.rowIndex;
-      // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
       const id = this.state.datas[index].actionTypeId;
-      // eslint-disable-next-line array-callback-return,react/destructuring-assignment
       this.state.commercialActions.map(row => {
         if ((row.commercialActionType._id) === (id)) test = true;
       });
       if (test) {
-        // eslint-disable-next-line react/destructuring-assignment
         newTab = this.state.datas.filter(row => row.actionTypeId !== id);
         this.setState({ openWarning: true, newTab, id });
       } else {
         ActionTypeService.deleteActionType(id).then(result => {
           this.setState({ datas: result.data });
         });
+      } */
+  };
+
+  deleteAndUpdateServiceType= () => {
+    const {
+      actionTypeTodelete, datas
+    } = this.state;
+    ActionTypeService.deleteActionType(actionTypeTodelete).then(result => {
+      if (JSON.stringify(datas) !== JSON.stringify(result.data)) {
+        notification('success', 'Action Type deleted');
       }
-    };
+      this.setState({ datas: result.data, popUpDelete: false });
+    });
+  };
 
     handleClose = () => {
-      this.setState({ openPopUp: false, openWarning: false });
+      this.setState({ openPopUp: false, openWarning: false, popUpDelete: false });
     };
 
     handleSave = () => {
@@ -184,7 +211,7 @@ class ActionTypeBlock extends React.Component {
 
     render() {
       const {
-        columns, openPopUp, datas, typeName, description, openWarning, newActionTypeId, newTab, percentage
+        columns, openPopUp, datas, typeName, description, openWarning, newActionTypeId, newTab, percentage, popUpDelete
       } = this.state;
       // eslint-disable-next-line react/prop-types
       const { logedUser } = this.props;
@@ -200,10 +227,12 @@ class ActionTypeBlock extends React.Component {
         responsive: 'stacked',
         download: exportButton,
         print: exportButton,
+        downloadOptions: {filename: 'commercial action type.csv', separator: ','},
         rowsPerPage: 10,
         customToolbar: () => (
           <CustomToolbar
             csvData={datas}
+            fileName="commercial action type"
             url="/app/gestion-commercial/Add Action-Type"
             tooltip="add new commercial action type"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_create}
@@ -227,7 +256,7 @@ class ActionTypeBlock extends React.Component {
             onClose={this.handleClose}
             aria-labelledby="alert-dialog-slide-title"
             aria-describedby="alert-dialog-slide-description"
-            fullWidth="md"
+            fullWidth
             maxWidth="md"
           >
             <DialogTitle id="alert-dialog-slide-title"> View Details</DialogTitle>
@@ -273,9 +302,9 @@ class ActionTypeBlock extends React.Component {
                       name="percentage"
                       value={percentage}
                       type="number"
+                      inputProps={{ min: 0, max: 100 }}
                       required
                       fullWidth
-                      multiline
                       onChange={this.handleChange}
                     />
                   </Grid>
@@ -304,8 +333,8 @@ class ActionTypeBlock extends React.Component {
             onClose={this.handleClose}
             aria-labelledby="alert-dialog-slide-title"
             aria-describedby="alert-dialog-slide-description"
-            fullWidth=""
-            maxWidth=""
+            fullWidth
+            maxWidth="md"
           >
             <DialogTitle id="alert-dialog-slide-title"> Operation Denied </DialogTitle>
             <DialogContent dividers>
@@ -358,6 +387,72 @@ class ActionTypeBlock extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
+          <Dialog
+            open={popUpDelete}
+            keepMounted
+            scroll="body"
+            onClose={this.handleClose}
+            aria-labelledby="alert-dialog-slide-title"
+            aria-describedby="alert-dialog-slide-description"
+            fullWidth=""
+            maxWidth=""
+          >
+            <DialogTitle id="alert-dialog-slide-title"> Delete</DialogTitle>
+            <DialogContent dividers>
+              <Grid item xs={12} md={12}>
+                are you sure you want to delete this action type ?
+              </Grid>
+            </DialogContent>
+            {/*   <DialogContent dividers>
+              <Grid item xs={12} md={12}>
+                { operationCommercial[0] !== ' -- ' ? (
+                  <TextField
+                    id="outlined-basic"
+                    label="Commercial Operation related"
+                    variant="outlined"
+                    name="name"
+                    fullWidth
+                    value={operationCommercial}
+                    onChange={this.handleChange}
+                    required
+                    className={classes.textField}
+                  />
+
+                ) : null}
+                <Autocomplete
+                  style={{ marginTop: '15px' }}
+                  multiple
+                  className={classes.textField}
+                  id="combo-box-demo"
+                  options={allCommercialServiceType}
+                  getOptionLabel={option => option.name}
+                  // value={allCommercialServiceType.find(v => v.name === serviceTypeNameCurrent[0]) || ''}
+                  value={serviceTypeNameCurrent}
+                  onChange={this.handleChangeServiceType}
+                  renderInput={params => (
+                    <TextField
+                      fullWidth
+                      {...params}
+                      label="Choose Service type"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </Grid>
+            </DialogContent> */}
+            <DialogActions>
+              <Button color="secondary" onClick={this.handleClose}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.deleteAndUpdateServiceType}
+              >
+                Update
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       );
     }
@@ -373,6 +468,5 @@ const ActionTypeBlockMapped = connect(
 
 export default () => {
   const { changeTheme } = useContext(ThemeContext);
-  const classes = useStyles();
-  return <ActionTypeBlockMapped changeTheme={changeTheme} classes={classes} />;
+  return <ActionTypeBlockMapped changeTheme={changeTheme} />;
 };

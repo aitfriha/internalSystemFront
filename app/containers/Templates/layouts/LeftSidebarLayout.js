@@ -360,8 +360,6 @@ class LeftSidebarLayout extends React.Component {
      if (window.location.pathname === '/app') {
        dataMenux = [];
      }
-     console.log(dataMenu[3]);
-
      return (
        <Fragment>
          <Header
