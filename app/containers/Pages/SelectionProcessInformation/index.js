@@ -128,6 +128,15 @@ class SelectionProcessInformation extends React.Component {
           }
         },
         {
+          name: 'profile',
+          label: 'Apply position',
+          options: {
+            filter: true,
+            setCellProps: () => this.setCellProps(),
+            setCellHeaderProps: () => this.setCellHeaderProps()
+          }
+        },
+        {
           name: 'firstName',
           label: 'First Name',
           options: {
@@ -148,15 +157,6 @@ class SelectionProcessInformation extends React.Component {
         {
           name: 'motherFamilyName',
           label: 'Mother Family Name',
-          options: {
-            filter: true,
-            setCellProps: () => this.setCellProps(),
-            setCellHeaderProps: () => this.setCellHeaderProps()
-          }
-        },
-        {
-          name: 'profile',
-          label: 'Profile',
           options: {
             filter: true,
             setCellProps: () => this.setCellProps(),
@@ -367,6 +367,7 @@ class SelectionProcessInformation extends React.Component {
           label: 'Knowledges and Experiences',
           name: 'knowledge',
           options: {
+            filter: true,
             setCellProps: () => this.setCellProps(),
             setCellHeaderProps: () => this.setCellHeaderProps(),
             customBodyRender: (value, tableMeta) => (
@@ -384,6 +385,18 @@ class SelectionProcessInformation extends React.Component {
             )
           }
         },
+        /*        {
+          name: 'knowledgeNames',
+          options: {
+            filter: true,
+            sort: true,
+            display: true,
+            viewColumns: true,
+            search: true,
+            setCellProps: () => this.setCellProps(),
+            setCellHeaderProps: () => this.setCellHeaderProps()
+          }
+        }, */
         {
           label: 'Economic Proposal Doc',
           name: 'economicProposalDoc',
@@ -457,6 +470,7 @@ class SelectionProcessInformation extends React.Component {
           label: ' ',
           name: ' ',
           options: {
+            viewColumns: false,
             setCellProps: () => this.setCellProps(),
             setCellHeaderProps: () => this.setCellHeaderProps(),
             customBodyRender: (value, tableMeta) => (
@@ -1522,10 +1536,10 @@ class SelectionProcessInformation extends React.Component {
                 >
                   <TextField
                     id="outlined-basic"
-                    label="First name"
+                    label="Apply position"
                     variant="outlined"
-                    name="firstName"
-                    value={firstName}
+                    name="profile"
+                    value={profile}
                     style={{ width: '22%' }}
                     className={classes.textField}
                     onChange={this.handleChange}
@@ -1552,10 +1566,10 @@ class SelectionProcessInformation extends React.Component {
                   />
                   <TextField
                     id="outlined-basic"
-                    label="Profile"
+                    label="First name"
                     variant="outlined"
-                    name="profile"
-                    value={profile}
+                    name="firstName"
+                    value={firstName}
                     style={{ width: '22%' }}
                     className={classes.textField}
                     onChange={this.handleChange}
@@ -2351,7 +2365,7 @@ class SelectionProcessInformation extends React.Component {
         >
           <DialogTitle id="SaveFormula">Knowledge and Experiences</DialogTitle>
           <DialogContent>
-            {selectionProcessInformationSelected ? (
+            {selectionProcessInformationSelected && allSelectionTypeEvaluation.length > 0 ? (
               allSelectionTypeEvaluation
                 .filter(type => type.type === 'Main Type')
                 .map(
@@ -2378,8 +2392,9 @@ class SelectionProcessInformation extends React.Component {
                   )
                 )
             ) : (
-              <div />
+              <div>there is no experiences</div>
             )}
+            {selectionProcessInformationSelected!= null && selectionProcessInformationSelected.knowledge.length > 0 ? (<div></div>) : (<div>there is no experiences for this personne</div>)}
           </DialogContent>
           <DialogActions>
             <Button autoFocus onClick={this.handleClose} color="primary">
@@ -2391,8 +2406,9 @@ class SelectionProcessInformation extends React.Component {
           title="Selection processes information"
           icon="ios-paper-outline"
           noMargin
+          desc=""
         >
-          <Button onClick={this.handleOpenFilterDialog}>Filter</Button>
+          <Button onClick={this.handleOpenFilterDialog}>Filter by knowledge and experience</Button>
           <MUIDataTable
             title=""
             data={filteredSelectionProcesses}

@@ -432,7 +432,7 @@ class SelectionTypesBlock extends React.Component {
                           }}
                         >
                           <div className={classes.divSpace}>
-                            <div>{subType.name}</div>
+                            <div>{subType.name} </div>
                           </div>
                         </Paper>
                       </div>

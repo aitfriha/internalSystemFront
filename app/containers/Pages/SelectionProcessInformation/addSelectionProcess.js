@@ -432,10 +432,10 @@ class AddSelectionProcess extends React.Component {
             >
               <TextField
                 id="outlined-basic"
-                label="First name"
+                label="Apply position"
                 variant="outlined"
-                name="firstName"
-                value={firstName}
+                name="profile"
+                value={profile}
                 style={{ width: '22%' }}
                 className={classes.textField}
                 onChange={this.handleChange}
@@ -462,10 +462,10 @@ class AddSelectionProcess extends React.Component {
               />
               <TextField
                 id="outlined-basic"
-                label="Profile"
+                label="First name"
                 variant="outlined"
-                name="profile"
-                value={profile}
+                name="firstName"
+                value={firstName}
                 style={{ width: '22%' }}
                 className={classes.textField}
                 onChange={this.handleChange}
