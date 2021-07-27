@@ -51,95 +51,111 @@ class AddTypeOfAction extends React.Component {
       this.setState({ [ev.target.name]: ev.target.value });
     };
 
-    render() {
-      const title = brand.name + ' - Add New Commercial Action Type';
-      const { desc } = brand;
-      // eslint-disable-next-line react/prop-types
-      const {
-        typeName, description, percentage
-      } = this.state;
-      return (
-        <div>
-          <Helmet>
-            <title>{title}</title>
-            <meta name="description" content={desc} />
-            <meta property="og:title" content={title} />
-            <meta property="og:description" content={desc} />
-            <meta property="twitter:title" content={title} />
-            <meta property="twitter:description" content={desc} />
-          </Helmet>
-          <PapperBlock
-            title="New Commercial Action Type "
-            desc="Please, Fill in the fields"
-            icon="ios-add-circle"
+  handleChangePercentage = (ev) => {
+    if (ev.target.value > 100 || ev.target.value < 0) {
+      if(ev.target.value < 0){
+        this.setState({ [ev.target.name]: 0 });
+      }
+      if(ev.target.value > 100){
+        notification('danger', "percentage can\'t be more than 100");
+        this.setState({ [ev.target.name]: 100 });
+      }
+    } else { this.setState({ [ev.target.name]: ev.target.value }); }
+  };
+
+  render() {
+    const title = brand.name + ' - Add New Commercial Action Type';
+    const { desc } = brand;
+    // eslint-disable-next-line react/prop-types
+    const {
+      typeName, description, percentage
+    } = this.state;
+    return (
+      <div>
+        <Helmet>
+          <title>{title}</title>
+          <meta name="description" content={desc} />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={desc} />
+          <meta property="twitter:title" content={title} />
+          <meta property="twitter:description" content={desc} />
+        </Helmet>
+        <PapperBlock
+          title="New Commercial Action Type "
+          desc="Please, Fill in the fields"
+          icon="ios-add-circle"
+        >
+          <Grid container spacing={1}>
+            <Grid item xs={11} />
+            <Grid item xs={1}>
+              <IconButton onClick={() => this.handleGoBack()}>
+                <KeyboardBackspaceIcon color="secondary" />
+              </IconButton>
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            spacing={2}
+            alignItems="flex-start"
+            direction="row"
+            justify="center"
           >
-            <Grid container spacing={1}>
-              <Grid item xs={11} />
-              <Grid item xs={1}>
-                <IconButton onClick={() => this.handleGoBack()}>
-                  <KeyboardBackspaceIcon color="secondary" />
-                </IconButton>
-              </Grid>
-            </Grid>
-            <Grid
-              container
-              spacing={2}
-              alignItems="flex-start"
-              direction="row"
-              justify="center"
-            >
-              <Grid item xs={12} md={6}>
-                <TextField
-                  id="typeName"
-                  label="Action Type Name"
-                  variant="outlined"
-                  name="typeName"
-                  value={typeName}
-                  required
-                  fullWidth
-                  onChange={this.handleChange}
-                />
-                <br />
-                <br />
-                <TextField
-                  id="description"
-                  label="Description"
-                  variant="outlined"
-                  name="description"
-                  value={description}
-                  required
-                  fullWidth
-                  multiline
-                  onChange={this.handleChange}
-                />
-                <br />
-                <br />
-                <TextField
-                  id="percentage"
-                  label="Percentage"
-                  variant="outlined"
-                  name="percentage"
-                  value={percentage}
-                  type="number"
-                  inputProps={{ min: 0, max: 100 }}
-                  required
-                  fullWidth
-                  onChange={this.handleChange}
-                />
-              </Grid>
-            </Grid>
-            <div align="center">
+            <Grid item xs={12} md={6}>
+              <TextField
+                id="typeName"
+                label="Action Type Name"
+                variant="outlined"
+                name="typeName"
+                value={typeName}
+                required
+                fullWidth
+                onChange={this.handleChange}
+              />
               <br />
               <br />
-              <Button size="small" color="inherit" onClick={this.handleGoBack}>Cancel</Button>
-              <Button variant="contained" color="primary" type="button" onClick={this.handleSubmit}>
+              <TextField
+                id="description"
+                label="Description"
+                variant="outlined"
+                name="description"
+                value={description}
+                required
+                fullWidth
+                multiline
+                onChange={this.handleChange}
+              />
+              <br />
+              <br />
+              <TextField
+                id="percentage"
+                label="Percentage"
+                variant="outlined"
+                name="percentage"
+                value={percentage}
+                type="number"
+                InputProps={{
+                  inputProps: {
+                    max: 100, min: 0
+                  }
+                }}
+                required
+                fullWidth
+                onChange={this.handleChangePercentage}
+              />
+            </Grid>
+          </Grid>
+          <div align="center">
+            <br />
+            <br />
+            <Button size="small" color="inherit" onClick={this.handleGoBack}>Cancel</Button>
+            <Button variant="contained" color="primary" type="button" onClick={this.handleSubmit}>
                             Save
-              </Button>
-            </div>
-          </PapperBlock>
-        </div>
-      );
-    }
+            </Button>
+          </div>
+        </PapperBlock>
+      </div>
+    );
+  }
 }
 
 const AddTypeOfActionMapped = connect()(AddTypeOfAction);

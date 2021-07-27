@@ -209,149 +209,71 @@ class ActionTypeBlock extends React.Component {
       this.setState({ [ev.target.name]: ev.target.value });
     };
 
-    render() {
-      const {
-        columns, openPopUp, datas, typeName, description, openWarning, newActionTypeId, newTab, percentage, popUpDelete
-      } = this.state;
-      // eslint-disable-next-line react/prop-types
-      const { logedUser } = this.props;
-      const thelogedUser = JSON.parse(logedUser);
-      let exportButton = false;
-      if (thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_export) {
-        exportButton = true;
+  handleChangePercentage = (ev) => {
+    if (ev.target.value > 100 || ev.target.value < 0) {
+      if (ev.target.value < 0) {
+        this.setState({ [ev.target.name]: 0 });
       }
-      const options = {
-        filter: true,
-        selectableRows: false,
-        filterType: 'dropdown',
-        responsive: 'stacked',
-        download: exportButton,
-        print: exportButton,
-        downloadOptions: {filename: 'commercial action type.csv', separator: ','},
-        rowsPerPage: 10,
-        customToolbar: () => (
-          <CustomToolbar
-            csvData={datas}
-            fileName="commercial action type"
-            url="/app/gestion-commercial/Add Action-Type"
-            tooltip="add new commercial action type"
-            hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_create}
-            hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_export}
-          />
-        )
-      };
+      if (ev.target.value > 100) {
+        notification('danger', "percentage can\'t be more than 100");
+        this.setState({ [ev.target.name]: 100 });
+      }
+    } else { this.setState({ [ev.target.name]: ev.target.value }); }
+  };
 
-      return (
-        <div>
-          <MUIDataTable
-            title="Commercial Actions Type List"
-            data={datas}
-            columns={columns}
-            options={options}
-          />
-          <Dialog
-            open={openPopUp}
-            keepMounted
-            scroll="paper"
-            onClose={this.handleClose}
-            aria-labelledby="alert-dialog-slide-title"
-            aria-describedby="alert-dialog-slide-description"
-            fullWidth
-            maxWidth="md"
-          >
-            <DialogTitle id="alert-dialog-slide-title"> View Details</DialogTitle>
-            <DialogContent dividers>
-              <div>
-                <Grid
-                  container
-                  spacing={2}
-                  alignItems="flex-start"
-                  direction="row"
-                  justify="center"
-                >
-                  <Grid item xs={12} md={6}>
-                    <TextField
-                      id="typeName"
-                      label="Action Type Name"
-                      variant="outlined"
-                      name="typeName"
-                      value={typeName}
-                      required
-                      fullWidth
-                      onChange={this.handleChange}
-                    />
-                    <br />
-                    <br />
-                    <TextField
-                      id="description"
-                      label="Description"
-                      variant="outlined"
-                      name="description"
-                      value={description}
-                      required
-                      fullWidth
-                      multiline
-                      onChange={this.handleChange}
-                    />
-                    <br />
-                    <br />
-                    <TextField
-                      id="percentage"
-                      label="Percentage"
-                      variant="outlined"
-                      name="percentage"
-                      value={percentage}
-                      type="number"
-                      inputProps={{ min: 0, max: 100 }}
-                      required
-                      fullWidth
-                      onChange={this.handleChange}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-            </DialogContent>
-            <DialogActions>
-              <Button color="secondary" onClick={this.handleClose}>
-                            Cancel
-              </Button>
-              {thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_modify ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={this.handleSave}
-                >
-                            save
-                </Button>
-              ) : null}
-            </DialogActions>
-          </Dialog>
-          <Dialog
-            open={openWarning}
-            keepMounted
-            scroll="paper"
-            onClose={this.handleClose}
-            aria-labelledby="alert-dialog-slide-title"
-            aria-describedby="alert-dialog-slide-description"
-            fullWidth
-            maxWidth="md"
-          >
-            <DialogTitle id="alert-dialog-slide-title"> Operation Denied </DialogTitle>
-            <DialogContent dividers>
-              <Typography
-                style={{
-                  color: '#000',
-                  fontFamily: 'sans-serif , Arial',
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  opacity: 0.4,
-                  marginRight: 20,
-                  width: '100%'
-                }}
-              >
-                This Action type is used in other commercial actions. If you want to force delete,
-                select other action type to be replaced with.
-              </Typography>
+  render() {
+    const {
+      columns, openPopUp, datas, typeName, description, openWarning, newActionTypeId, newTab, percentage, popUpDelete
+    } = this.state;
+      // eslint-disable-next-line react/prop-types
+    const { logedUser } = this.props;
+    const thelogedUser = JSON.parse(logedUser);
+    let exportButton = false;
+    if (thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_export) {
+      exportButton = true;
+    }
+    const options = {
+      filter: true,
+      selectableRows: false,
+      filterType: 'dropdown',
+      responsive: 'stacked',
+      download: exportButton,
+      print: exportButton,
+      downloadOptions: { filename: 'commercial action type.csv', separator: ',' },
+      rowsPerPage: 10,
+      customToolbar: () => (
+        <CustomToolbar
+          csvData={datas}
+          fileName="commercial action type"
+          url="/app/gestion-commercial/Add Action-Type"
+          tooltip="add new commercial action type"
+          hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_create}
+          hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_export}
+        />
+      )
+    };
+
+    return (
+      <div>
+        <MUIDataTable
+          title="Commercial Actions Type List"
+          data={datas}
+          columns={columns}
+          options={options}
+        />
+        <Dialog
+          open={openPopUp}
+          keepMounted
+          scroll="paper"
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle id="alert-dialog-slide-title"> View Details</DialogTitle>
+          <DialogContent dividers>
+            <div>
               <Grid
                 container
                 spacing={2}
@@ -359,51 +281,145 @@ class ActionTypeBlock extends React.Component {
                 direction="row"
                 justify="center"
               >
-                <Grid item xs={4}>
-                  <FormControl fullWidth required>
-                    <InputLabel>Commercial Action Type</InputLabel>
-                    <Select
-                      name="newActionTypeId"
-                      value={newActionTypeId}
-                      onChange={this.handleChange}
-                    >
-                      {newTab.map((clt) => (
-                        <MenuItem key={clt.actionTypeId} value={clt.actionTypeId}>
-                          {clt.typeName}
-                        </MenuItem>
-                      ))
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    id="typeName"
+                    label="Action Type Name"
+                    variant="outlined"
+                    name="typeName"
+                    value={typeName}
+                    required
+                    fullWidth
+                    onChange={this.handleChange}
+                  />
+                  <br />
+                  <br />
+                  <TextField
+                    id="description"
+                    label="Description"
+                    variant="outlined"
+                    name="description"
+                    value={description}
+                    required
+                    fullWidth
+                    multiline
+                    onChange={this.handleChange}
+                  />
+                  <br />
+                  <br />
+                  <TextField
+                    id="percentage"
+                    label="Percentage"
+                    variant="outlined"
+                    name="percentage"
+                    value={percentage}
+                    type="number"
+                    InputProps={{
+                      inputProps: {
+                        max: 100, min: 0
                       }
-                    </Select>
-                  </FormControl>
+                    }}
+                    required
+                    fullWidth
+                    onChange={this.handleChangePercentage}
+                  />
                 </Grid>
               </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button color="secondary" onClick={this.handleClose}>
-                Cancel
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button color="secondary" onClick={this.handleClose}>
+                            Cancel
+            </Button>
+            {thelogedUser.userRoles[0].actionsNames.financialModule_typeOfCurrency_modify ? (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={this.handleSave}
+              >
+                            save
               </Button>
-              <Button variant="contained" color="primary" onClick={this.handleReplaceAction}>
-                Save
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Dialog
-            open={popUpDelete}
-            keepMounted
-            scroll="body"
-            onClose={this.handleClose}
-            aria-labelledby="alert-dialog-slide-title"
-            aria-describedby="alert-dialog-slide-description"
-            fullWidth=""
-            maxWidth=""
-          >
-            <DialogTitle id="alert-dialog-slide-title"> Delete</DialogTitle>
-            <DialogContent dividers>
-              <Grid item xs={12} md={12}>
-                are you sure you want to delete this action type ?
+            ) : null}
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openWarning}
+          keepMounted
+          scroll="paper"
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle id="alert-dialog-slide-title"> Operation Denied </DialogTitle>
+          <DialogContent dividers>
+            <Typography
+              style={{
+                color: '#000',
+                fontFamily: 'sans-serif , Arial',
+                fontSize: '16px',
+                fontWeight: 'bold',
+                opacity: 0.4,
+                marginRight: 20,
+                width: '100%'
+              }}
+            >
+                This Action type is used in other commercial actions. If you want to force delete,
+                select other action type to be replaced with.
+            </Typography>
+            <Grid
+              container
+              spacing={2}
+              alignItems="flex-start"
+              direction="row"
+              justify="center"
+            >
+              <Grid item xs={4}>
+                <FormControl fullWidth required>
+                  <InputLabel>Commercial Action Type</InputLabel>
+                  <Select
+                    name="newActionTypeId"
+                    value={newActionTypeId}
+                    onChange={this.handleChange}
+                  >
+                    {newTab.map((clt) => (
+                      <MenuItem key={clt.actionTypeId} value={clt.actionTypeId}>
+                        {clt.typeName}
+                      </MenuItem>
+                    ))
+                    }
+                  </Select>
+                </FormControl>
               </Grid>
-            </DialogContent>
-            {/*   <DialogContent dividers>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button color="secondary" onClick={this.handleClose}>
+                Cancel
+            </Button>
+            <Button variant="contained" color="primary" onClick={this.handleReplaceAction}>
+                Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={popUpDelete}
+          keepMounted
+          scroll="body"
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          fullWidth=""
+          maxWidth=""
+        >
+          <DialogTitle id="alert-dialog-slide-title"> Delete</DialogTitle>
+          <DialogContent dividers>
+            <Grid item xs={12} md={12}>
+                are you sure you want to delete this action type ?
+            </Grid>
+          </DialogContent>
+          {/*   <DialogContent dividers>
               <Grid item xs={12} md={12}>
                 { operationCommercial[0] !== ' -- ' ? (
                   <TextField
@@ -440,22 +456,22 @@ class ActionTypeBlock extends React.Component {
                 />
               </Grid>
             </DialogContent> */}
-            <DialogActions>
-              <Button color="secondary" onClick={this.handleClose}>
+          <DialogActions>
+            <Button color="secondary" onClick={this.handleClose}>
                 Cancel
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={this.deleteAndUpdateServiceType}
-              >
-                Update
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-      );
-    }
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.deleteAndUpdateServiceType}
+            >
+                Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
 }
 
 const mapStateToProps = () => ({

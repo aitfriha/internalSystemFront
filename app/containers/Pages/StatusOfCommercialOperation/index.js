@@ -45,13 +45,25 @@ class StatusOfCommercialOperation extends React.Component {
           // eslint-disable-next-line no-useless-concat
           title: 'Percentage in % ' + '*',
           field: 'percentage',
-
           editComponent: props => (
             <TextField
               value={props.value}
               type="number"
               inputProps={{ min: 0, max: 100 }}
-              onChange={(event) => { props.onChange(event.target.value); }}
+              // onChange={(event) => { props.onChange(event.target.value); }}
+              onChange={(event) => {
+                if (event.target.value > 100 || event.target.value < 0) {
+                  if (event.target.value < 0) {
+                    props.onChange(0);
+                  }
+                  if (event.target.value > 100) {
+                    notification('danger', "percentage can\'t be more than 100");
+                    props.onChange(100);
+                  }
+                } else {
+                  props.onChange(event.target.value);
+                }
+              }}
             />
           )
           /* cellStyle: { width: 155, maxWidth: 155 },
@@ -77,6 +89,14 @@ class StatusOfCommercialOperation extends React.Component {
   onChange = (ev) => {
     this.setState({ code: ev });
   };
+
+  onChangex = (ev) => {
+    console.log(ev);
+    if (ev > 100) {
+      notification('danger', "percentage can\'t be more than 100");
+    } else { this.setState({ percentage: ev.target.value }); }
+  };
+
 
   render() {
     const title = brand.name + ' - Status Of Commercial Operation';
