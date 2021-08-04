@@ -109,7 +109,7 @@ class SectorsBlock extends React.Component {
     return (
       <div>
         <MUIDataTable
-          title="The Sectors List"
+          title="The Sectors List x"
           data={sectorsConfig}
           columns={columns}
           options={options}

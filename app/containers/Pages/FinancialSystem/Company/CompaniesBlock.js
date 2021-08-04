@@ -24,6 +24,7 @@ import { getAllStateByCountry } from '../../../../redux/stateCountry/actions';
 import { getAllCityByState } from '../../../../redux/city/actions';
 import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import styles from './companies-jss';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles(styles);
 
@@ -32,6 +33,8 @@ class CompaniesBlock extends React.Component {
     super(props);
     const thelogedUser = JSON.parse(this.props.logedUser);
     this.state = {
+      openPopUpDelete: false,
+      companyToDeleteId: '',
       financialCompanyId: '',
       cityId: '',
       name: '',
@@ -464,11 +467,8 @@ class CompaniesBlock extends React.Component {
 
   handleDelete = (tableMeta) => {
     const index = tableMeta.tableState.page * tableMeta.tableState.rowsPerPage + tableMeta.rowIndex;
-    // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-    const id = this.state.datas[index].financialCompanyId;
-    FinancialCompanyService.deleteCompany(id).then(result => {
-      this.setState({ datas: result.data });
-    });
+    this.setState({ openPopUpDelete: true });
+    this.setState({ companyToDeleteId: this.state.datas[index].financialCompanyId });
   };
 
   handleSave = () => {
@@ -483,12 +483,33 @@ class CompaniesBlock extends React.Component {
       financialCompanyId, name, code, taxNumber, email, phone1, phone2, logo, address
     };
     FinancialCompanyService.updateCompany(FinancialCompany).then(result => {
+      if (result.status === 200) {
+        notification('success', 'company updated');
+      }
       this.setState({ datas: result.data, openPopUp: false });
-    });
+    })
+      .catch(err => notification('danger', err.response.data.errors.message));
   };
 
   handleClose = () => {
     this.setState({ openPopUp: false });
+  };
+
+  handleCloseDelete = () => {
+    this.setState({ openPopUpDelete: false });
+  };
+
+  deleteConfirmeCompany= () => {
+    const { companyToDeleteId } = this.state;
+    this.setState({ openPopUpDelete: false });
+    FinancialCompanyService.deleteCompany(companyToDeleteId).then(result => {
+      if (result.status === 200) {
+        notification('success', 'company deleted');
+      } else {
+        notification('danger', 'company not deleted');
+      }
+      this.setState({ datas: result.data });
+    });
   };
 
   handleChangeCountry = (ev, value) => {
@@ -515,7 +536,6 @@ class CompaniesBlock extends React.Component {
   readURI(e) {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
-      console.log(e.target.files);
       reader.onload = function (ev) {
         this.setState({ logo: ev.target.result });
       }.bind(this);
@@ -528,7 +548,6 @@ class CompaniesBlock extends React.Component {
   };
 
   render() {
-    console.log(this.state);
     const {
       // eslint-disable-next-line react/prop-types
       allCountrys, allStateCountrys, allCitys, logedUser
@@ -536,7 +555,7 @@ class CompaniesBlock extends React.Component {
     const {
       datas, columns, openPopUp,
       name, code, taxNumber, email, phone1, phone2, logo,
-      postCode, fullAddress, keyCountry, keyState, keyCity
+      postCode, fullAddress, keyCountry, keyState, keyCity, openPopUpDelete
     } = this.state;
     const thelogedUser = JSON.parse(logedUser);
     let exportButton = false;
@@ -615,6 +634,7 @@ class CompaniesBlock extends React.Component {
                       required
                       fullWidth
                       onChange={this.handleChange}
+                      inputProps={{ maxLength: 10 }}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -651,6 +671,7 @@ class CompaniesBlock extends React.Component {
                       required
                       fullWidth
                       onChange={this.handleChange}
+                      inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 13 }}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -663,6 +684,7 @@ class CompaniesBlock extends React.Component {
                       required
                       fullWidth
                       onChange={this.handleChange}
+                      inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 13 }}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -778,9 +800,36 @@ class CompaniesBlock extends React.Component {
                 color="primary"
                 onClick={this.handleSave}
               >
-              save
+              update
               </Button>
             ) : null}
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openPopUpDelete}
+          keepMounted
+          scroll="body"
+          onClose={this.handleClose}
+          aria-labelledby="alert-dialog-slide-title"
+          aria-describedby="alert-dialog-slide-description"
+          fullWidth=""
+          maxWidth=""
+        >
+          <DialogTitle id="alert-dialog-slide-title"> Delete company </DialogTitle>
+          <DialogContent dividers>
+            Are you sure you want to delete this company ?
+          </DialogContent>
+          <DialogActions>
+            <Button color="secondary" onClick={this.handleCloseDelete}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.deleteConfirmeCompany}
+            >
+              Delete
+            </Button>
           </DialogActions>
         </Dialog>
       </div>

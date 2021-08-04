@@ -124,7 +124,7 @@ export class AssignStaff extends React.Component {
       handleClose();
       if (isString(result)) {
         const params = {
-          operationId: data.operation.id
+          operationId: data.operation.commercialOperationId
         };
         getStaffAssignedByOperation(params);
         notification('success', result);
@@ -163,15 +163,15 @@ export class AssignStaff extends React.Component {
       const selectedEmployee = eligible[destination.source.index];
       const newObj = {
         id: 'new',
-        employeeId: selectedEmployee.id,
+        employeeId: selectedEmployee.staffId,
         personalNumber: selectedEmployee.personalNumber,
-        name: selectedEmployee.name,
+        name: selectedEmployee.firstName,
         fatherFamilyName: selectedEmployee.fatherFamilyName,
         motherFamilyName: selectedEmployee.motherFamilyName,
         avatar: selectedEmployee.avatar,
         company: selectedEmployee.company,
         companyEmail: selectedEmployee.companyEmail,
-        operationId: this.props.data.operation.id,
+        operationId: this.props.data.operation.commercialOperationId,
         operationCode: this.props.data.operation.code,
         operationName: this.props.data.operation.name,
         startDate: data.date,
@@ -220,7 +220,9 @@ export class AssignStaff extends React.Component {
 
     (!isLoading && staffAssignmentResponse) && this.editingPromiseResolve(staffAssignmentResponse);
     (!isLoading && !staffAssignmentResponse) && this.editingPromiseResolve(errors);
-
+    this.state.eligibleList.map((item, index) => (
+        console.log(item)
+    ))
     return (
       <Dialog
         open={this.props.open}
@@ -292,7 +294,7 @@ Assign staff to selected operation
                   ref={provided.innerRef}
                 >
                   {this.state.eligibleList.map((item, index) => (
-                    <Draggable key={index + '-' + item.id} draggableId={item.id} item={item} index={index}>
+                    <Draggable key={index + '-' + item.staffId} draggableId={item.staffId} item={item} index={index}>
                       {provided => (
                         <div
                           ref={provided.innerRef}
@@ -302,8 +304,8 @@ Assign staff to selected operation
                           { this.state.assignedList.findIndex(obj => obj.employeeId === item.id) === -1
                             ? (
                               <div id={item.id} style={{ margin: 10 }}>
-                                <Tooltip title={`${item.name} ${item.fatherFamilyName} ${item.motherFamilyName}`}>
-                                  <img src={item.avatar} alt={`${item.name} ${item.fatherFamilyName} ${item.motherFamilyName}`} style={{ width: 40, borderRadius: '50%' }} />
+                                <Tooltip title={`${item.firstName} ${item.fatherFamilyName} ${item.motherFamilyName}`}>
+                                  <img src={item.avatar} alt={`${item.firstName} ${item.fatherFamilyName} ${item.motherFamilyName}`} style={{ width: 40, borderRadius: '50%' }} />
                                   {/* <Avatar className={classes.avatar} alt={`${item.name} ${item.fatherFamilyName} ${item.motherFamilyName}`} src={item.avatar} /> */}
                                 </Tooltip>
                               </div>

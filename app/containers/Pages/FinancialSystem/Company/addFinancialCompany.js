@@ -26,6 +26,7 @@ import { getAllCityByState } from '../../../../redux/city/actions';
 import { addClientCommercial, getAllClient } from '../../../../redux/client/actions';
 import FinancialCompanyService from '../../../Services/FinancialCompanyService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles(styles);
 
@@ -101,9 +102,14 @@ class AddFinancialCompany extends React.Component {
         name, code, taxNumber, email, phone1, phone2, logo, address
       };
       FinancialCompanyService.saveCompany(FinancialCompany).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'company Added');
+        } else {
+          notification('danger', 'company not Added');
+        }
         history.push('/app/gestion-financial/Company');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors.message));
     }
 
     handleChange = (ev) => {
@@ -190,6 +196,7 @@ class AddFinancialCompany extends React.Component {
                   fullWidth
                   onChange={this.handleChange}
                   className={classes.textField}
+                  inputProps={{ maxLength: 10 }}
                 />
                 <TextField
                   id="outlined-basic"
@@ -223,6 +230,7 @@ class AddFinancialCompany extends React.Component {
                   fullWidth
                   onChange={this.handleChange}
                   className={classes.textField}
+                  inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 13 }}
                 />
                 <TextField
                   id="outlined-basic"
@@ -234,6 +242,7 @@ class AddFinancialCompany extends React.Component {
                   fullWidth
                   onChange={this.handleChange}
                   className={classes.textField}
+                  inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 13 }}
                 />
                 <br />
                 <br />

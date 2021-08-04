@@ -39,12 +39,21 @@ class sector extends React.Component {
     super(props);
     this.editingPromiseResolve = () => {
     };
+    this.editingPromiseResolveUpdate = () => {
+    };
     const thelogedUser = JSON.parse(this.props.logedUser);
     this.state = {
+      updateButtons: true,
+      createButtons: true,
+      firstSectorId: '',
+      secondSectorId: '',
+      thirdSectorId: '',
       description1: '',
       description2: '',
       description3: '',
       thirdSectorName: '',
+      keySectorPrimary: {},
+      keySectorSecond: {},
       openPopUp: false,
       message: '',
       isDisabled: true,
@@ -90,6 +99,13 @@ class sector extends React.Component {
                 {/*              <IconButton onClick={() => console.log('eee')}>
                   <EditIcon color="secondary" />
                 </IconButton> */}
+                {thelogedUser.userRoles[0].actionsNames.commercial_sectorsCompany_modify
+                  ? (
+                    <IconButton onClick={() => this.edit(data.rowData[0], data.rowData[1], data.rowData[2])}>
+                      <EditIcon color="primary" />
+                    </IconButton>
+                  ) : null
+                }
                 {thelogedUser.userRoles[0].actionsNames.commercial_sectorsCompany_delete
                   ? (
                     <IconButton onClick={() => this.delete(data.rowData[0], data.rowData[1], data.rowData[2])}>
@@ -105,13 +121,9 @@ class sector extends React.Component {
     };
   }
 
-  /* componentDidUpdate(prevProps, prevState, snapshot) {
-    console.log('2');
-    console.log(this.state.message);
-  } */
 
   handleClose = () => {
-    this.setState({ openPopUp: false });
+    this.setState({ keySectorPrimary: '' });
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -141,6 +153,32 @@ class sector extends React.Component {
       //  notification('danger', result);
       }
     });
+  };
+
+  edit = (a, b, c) => {
+    this.setState({ createButtons: false, updateButtons: true, });
+    window.scrollTo(0, 0);
+    const { getAllChildSectorCompany, allSectorComapnys } = this.props;
+    const promise = new Promise((resolve1) => {
+      getAllChildSectorCompany(a);
+      this.editingPromiseResolveUpdate = resolve1;
+    });
+    promise.then((result) => {
+      const sector2 = result.filter(row => (row.secondSectorName === b))[0];
+      this.setState({ keySectorSecond: sector2 });
+      this.setState({ description2: sector2.secondSectorDescription });
+      this.setState({ secondSectorId: sector2.secondSectorId });
+      const sector3 = allSectorComapnys.filter(row => (row.secondSectorName === b))[0];
+      this.setState({ thirdSectorName: sector3.thirdSectorName });
+      this.setState({ description3: sector3.thirdSectorDescription });
+      this.setState({ thirdSectorId: sector3.thirdSectorId });
+    });
+    const { allSectorPimaryComapnys } = this.props;
+    const sector1 = allSectorPimaryComapnys.filter(row => (row.firstSectorName === a))[0];
+    this.setState({ description1: sector1.firstSectorDescription });
+
+    this.setState({ keySectorPrimary: sector1 });
+    this.setState({ firstSectorId: sector1.firstSectorId });
   };
 
   deleteConfirmation = () => {
@@ -187,24 +225,20 @@ class sector extends React.Component {
   };
 
   handleinputChange1 = (ev, value) => {
-    console.log('oui input first ', value);
     this.setState({ firstSectorName: value });
     this.setState({ isDisabled: false });
   };
 
 
   handleValueChange2 = (ev, value) => {
-    console.log('oui change second');
     this.setState({ secondSectorName: value.secondSectorName });
   };
 
   handleinputChange2 = (ev, value) => {
-    console.log('oui input second');
     this.setState({ secondSectorName: value });
   };
 
   handleValueChange3 = ev => {
-    console.log(ev.target.value);
     this.setState({ [ev.target.name]: ev.target.value });
   }
 
@@ -212,11 +246,37 @@ class sector extends React.Component {
     this.setState({ [ev.target.name]: ev.target.value });
   }
 
+  cancel = () => {
+    this.setState({ keySectorPrimary: '' });
+    this.setState({ keySectorSecond: '' });
+    this.setState({ thirdSectorName: '' });
+    this.setState({ firstSectorId: '' });
+    this.setState({ secondSectorId: '' });
+    this.setState({ thirdSectorName: '' });
+  }
+
+  handleUpdateSector= () => {
+    console.log('update');
+  }
+
   handleSubmitSector = () => {
     const {
-      firstSectorName, secondSectorName, thirdSectorName, description1, description2, description3
+      firstSectorName, secondSectorName, thirdSectorName, description1, description2, description3,
+      firstSectorId,
+      secondSectorId,
+      thirdSectorId,
     } = this.state;
     const { addSectorCompany, getAllSectorCompany, getAllPrimarySectorCompany } = this.props;
+    if (firstSectorId !== '') {
+      console.log('update ');
+      console.log('firstSectorId ' + firstSectorId);
+      console.log('secondSectorId ' + secondSectorId);
+      console.log('thirdSectorId ' + thirdSectorId);
+      console.log('firstSectorName ' + firstSectorName);
+      console.log('secondSectorName ' + secondSectorName);
+      console.log('thirdSectorName ' + thirdSectorName);
+      return;
+    }
     const sect = {
       firstSectorName,
       firstSectorDescription: description1,
@@ -244,21 +304,24 @@ class sector extends React.Component {
     const title = brand.name + ' - Sectors';
     const description = brand.desc;
     const {
-      description1, description2, description3, thirdSectorName, isDisabled, openPopUp, message
+      description1, description2, description3, thirdSectorName, isDisabled, openPopUp, message, keySectorPrimary, keySectorSecond, createButtons
     } = this.state;
     const {
       // eslint-disable-next-line no-shadow
-      errors, isLoading, sectorComapnyResponse, allSectorComapnys, allSectorPimaryComapnys, deleteSectorCompany, logedUser
+      errors, isLoading, isLoadingAllSectorChildComapnys, sectorChildComapnyResponse, sectorComapnyResponse, allSectorComapnys, allSectorPimaryComapnys, deleteSectorCompany, logedUser
     } = this.props;
     (!isLoading && sectorComapnyResponse) && this.editingPromiseResolve(sectorComapnyResponse);
     (!isLoading && !sectorComapnyResponse) && this.editingPromiseResolve(errors);
+    console.log(!isLoadingAllSectorChildComapnys && sectorChildComapnyResponse.length > 0) && this.editingPromiseResolveUpdate(sectorChildComapnyResponse.length > 0);
+    (!isLoadingAllSectorChildComapnys && sectorChildComapnyResponse.length > 0) && this.editingPromiseResolveUpdate(sectorChildComapnyResponse);
+    (!isLoadingAllSectorChildComapnys && sectorChildComapnyResponse.length > 0) && this.editingPromiseResolveUpdate(errors);
     let {
       allSectorChildComapnys
     } = this.props;
     if (allSectorChildComapnys === undefined) {
       allSectorChildComapnys = [{ secondSectorName: '' }];
     } else {
-      console.log('allSectorChildComapnys ', allSectorChildComapnys);
+
     }
     const thelogedUser = JSON.parse(logedUser);
     let exportButton = false;
@@ -319,27 +382,30 @@ class sector extends React.Component {
                   alignItems="center"
                 >
                   <Typography variant="subtitle2" color="primary" style={{ width: '12%' }}>First Sector</Typography>
-                  <div style={{ width: '35%' }}>
-                    {/*  <AutoComplete value={this.handleValueChange} placeholder="First Sector Name" data={sectors1} type="sector1" /> */}
-                    <Autocomplete
-                      id="combo-box-demo"
-                      name="firstSector"
-                      freeSolo
-                      options={allSectorPimaryComapnys}
-                      getOptionLabel={option => option.firstSectorName}
-                      onChange={this.handleValueChange1}
-                      onInputChange={this.handleinputChange1}
-                      style={{ marginTop: 15 }}
-                      renderInput={params => (
-                        <TextField
-                          fullWidth
-                          {...params}
-                          label="First Sector"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </div>
+                  { allSectorPimaryComapnys !== undefined ? (
+                    <div style={{ width: '35%' }}>
+                      {/*  <AutoComplete value={this.handleValueChange} placeholder="First Sector Name" data={sectors1} type="sector1" /> */}
+                      <Autocomplete
+                        id="combo-box-demo"
+                        name="firstSector"
+                        freeSolo
+                        options={allSectorPimaryComapnys}
+                        getOptionLabel={option => option.firstSectorName}
+                        value={allSectorPimaryComapnys.find(v => v.firstSectorName === keySectorPrimary.firstSectorName) || ''}
+                        onChange={this.handleValueChange1}
+                        onInputChange={this.handleinputChange1}
+                        style={{ marginTop: 15 }}
+                        renderInput={params => (
+                          <TextField
+                            fullWidth
+                            {...params}
+                            label="First Sector"
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </div>
+                  ) : ''}
                   <TextField
                     id="outlined-basic"
                     label="Description"
@@ -362,27 +428,30 @@ class sector extends React.Component {
                   alignItems="center"
                 >
                   <Typography variant="subtitle2" color="primary" style={{ width: '12%' }}>Second Sector</Typography>
-                  <div style={{ width: '35%' }}>
-                    <Autocomplete
-                      id="combo-box-demo"
-                      freeSolo
-                      name="secondSector"
-                      disabled={isDisabled}
-                      options={allSectorChildComapnys && allSectorChildComapnys}
-                      getOptionLabel={option => option.secondSectorName}
-                      onChange={this.handleValueChange2}
-                      onInputChange={this.handleinputChange2}
-                      style={{ marginTop: 15 }}
-                      renderInput={params => (
-                        <TextField
-                          fullWidth
-                          {...params}
-                          label="Second Sector"
-                          variant="outlined"
-                        />
-                      )}
-                    />
-                  </div>
+                  { allSectorChildComapnys !== undefined ? (
+                    <div style={{ width: '35%' }}>
+                      <Autocomplete
+                        id="combo-box-demo"
+                        freeSolo
+                        name="secondSector"
+                        disabled={isDisabled}
+                        options={allSectorChildComapnys && allSectorChildComapnys}
+                        getOptionLabel={option => option.secondSectorName}
+                        value={allSectorChildComapnys.find(v => v.secondSectorName === keySectorSecond.secondSectorName) || ''}
+                        onChange={this.handleValueChange2}
+                        onInputChange={this.handleinputChange2}
+                        style={{ marginTop: 15 }}
+                        renderInput={params => (
+                          <TextField
+                            fullWidth
+                            {...params}
+                            label="Second Sector"
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </div>
+                  ) : ''}
                   <TextField
                     id="outlined-basic"
                     label="Description"
@@ -437,14 +506,35 @@ class sector extends React.Component {
                   style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}
                 >
                   <Button
-                    color="primary"
+                    color="secondary"
                     variant="contained"
                     size="medium"
-                    onClick={this.handleSubmitSector}
-                  /*   disabled={!sector2 || !sector1 || !sector3} */
+                    onClick={this.cancel}
+                    /*   disabled={!sector2 || !sector1 || !sector3} */
                   >
-                  Save Sector
+                    Cancel
                   </Button>
+                  &nbsp;&nbsp;
+                  { createButtons ? (
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      size="medium"
+                      onClick={this.handleSubmitSector}
+                      /*   disabled={!sector2 || !sector1 || !sector3} */
+                    >
+                  Save Sectors
+                    </Button>
+                  ) : (
+                    <Button
+                      color="primary"
+                      variant="contained"
+                      size="medium"
+                      onClick={this.handleUpdateSector}
+                    >
+                    Update Sectors
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             </div>
@@ -505,12 +595,15 @@ sector.propTypes = {
 
   getAllPrimarySectorCompany: PropTypes.func.isRequired,
   allSectorPimaryComapnys: PropTypes.array.isRequired,
+  allSectorChildComapnys: PropTypes.array.isRequired,
 };
 const mapStateToProps = state => ({
   allSectorComapnys: state.getIn(['sectorCompany']).allSectorComapnys,
   allSectorChildComapnys: state.getIn(['sectorCompany']).allSectorChildComapnys,
   sectorComapnyResponse: state.getIn(['sectorCompany']).sectorComapnyResponse,
+  sectorChildComapnyResponse: state.getIn(['sectorCompany']).sectorChildComapnyResponse,
   isLoading: state.getIn(['sectorCompany']).isLoading,
+  isLoadingAllSectorChildComapnys: state.getIn(['sectorCompany']).isLoadingAllSectorChildComapnys,
   errors: state.getIn(['sectorCompany']).errors,
 
   allSectorPimaryComapnys: state.getIn(['sectorCompany']).allSectorPimaryComapnys,

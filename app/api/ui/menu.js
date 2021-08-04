@@ -225,12 +225,12 @@ module.exports = [
             link: '/app/gestion-financial/IVA',
             icon: 'ios-cash-outline'
           },
-          {
+          /*          {
             key: 'typeOfRetentoins',
             name: 'Types of Retentions',
             link: '/app/gestion-financial/Retention',
             icon: 'ios-cash-outline'
-          },
+          }, */
           {
             key: 'suppliersType',
             name: 'Suppliers Type ',

@@ -171,9 +171,9 @@ class LeftSidebarLayout extends React.Component {
     if (thelogedUser.userRoles[0].actionsNames.financialModule_expensesEmailAddress_access == false) {
       this.access('financial', 'financial_basic_table', 'expenseEmailAddress');
     }
-    if (thelogedUser.userRoles[0].actionsNames.financialModule_typeOfRententions_access == false) {
+    /*    if (thelogedUser.userRoles[0].actionsNames.financialModule_typeOfRententions_access == false) {
       this.access('financial', 'financial_basic_table', 'typeOfRetentoins');
-    }
+    } */
 
     if (thelogedUser.userRoles[0].actionsNames.financialModule_expenseRecord_access == false) {
       this.access('financial', 'financial-expenses', 'expensesRecord');

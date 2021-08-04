@@ -553,7 +553,6 @@ class CommercialActionsBlock extends React.Component {
     }
 
     render() {
-      console.log(this.state);
       const {
         openPopUp, commercialActions, currentAction, nbrConclusions, conclusions, openWarning, allStaffAssign,
         descriptions, objectifs, actionTypes, actionTypeId, nbrActions, actionDescriptions, actionDates, userType

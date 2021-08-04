@@ -578,7 +578,6 @@ class AddContract extends React.Component {
       // eslint-disable-next-line react/prop-types
       allCountrys, allStateCountrys, allCitys
     } = this.props;
-    console.log(this.state);
     const conceptTypes = [
       {
         value: 1,

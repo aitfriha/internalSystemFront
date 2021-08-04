@@ -27,8 +27,10 @@ import {
 
 const initialState = {
   isLoading: false,
+  isLoadingAllSectorChildComapnys: false,
   errors: {},
   sectorComapnyResponse: '',
+  sectorChildComapnyResponse: '',
   allSectorComapnys: [],
   allSubSectorChildComapnys: [],
   subsectorComapnyResponse: '',
@@ -38,7 +40,6 @@ export default function sectorComapnyReducer(state = initialState, action) {
   switch (action.type) {
     // TRIGGERING ACTIONS
     case GET_ALL_SECTORCOMPANYS:
-    case GET_ALL_CHILDSECTORCOMPANYS:
     case GET_ALL_SUBCHILDSECTORCOMPANYS:
     case ADD_SECTORCOMPANY:
     case UPDATE_SECTORCOMPANY:
@@ -47,9 +48,14 @@ export default function sectorComapnyReducer(state = initialState, action) {
       return {
         ...state,
         isLoading: true,
-        sectorComapnyResponse: ''
+        sectorComapnyResponse: '',
       };
-
+    case GET_ALL_CHILDSECTORCOMPANYS:
+      return {
+        ...state,
+        isLoadingAllSectorChildComapnys: true,
+        sectorChildComapnyResponse: ''
+      };
       // SUCCESS ACTIONS
     case ADD_SECTORCOMPANY_SUCCESS:
     case UPDATE_SECTORCOMPANY_SUCCESS:
@@ -73,9 +79,9 @@ export default function sectorComapnyReducer(state = initialState, action) {
     case GET_ALL_CHILDSECTORCOMPANYS_SUCCESS:
       return {
         ...state,
-        isLoading: false,
+        isLoadingAllSectorChildComapnys: false,
         allSectorChildComapnys: action.payload,
-        sectorComapnyResponse: ''
+        sectorChildComapnyResponse: action.payload,
       };
 
     case GET_ALL_SUBCHILDSECTORCOMPANYS_SUCCESS:

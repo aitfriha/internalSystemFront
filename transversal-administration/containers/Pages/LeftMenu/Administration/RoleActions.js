@@ -339,11 +339,11 @@ class RoleActions extends React.Component {
       financialModule_iva_delete: false,
       financialModule_iva_export: false,
 
-      financialModule_typeOfRententions_access: false,
+      /*      financialModule_typeOfRententions_access: false,
       financialModule_typeOfRententions_create: false,
       financialModule_typeOfRententions_modify: false,
       financialModule_typeOfRententions_delete: false,
-      financialModule_typeOfRententions_export: false,
+      financialModule_typeOfRententions_export: false, */
 
       financialModule_suppliersTypes_access: false,
       financialModule_suppliersTypes_create: false,
@@ -721,11 +721,11 @@ class RoleActions extends React.Component {
       financialModule_iva_modify,
       financialModule_iva_delete,
       financialModule_iva_export,
-      financialModule_typeOfRententions_access,
+      /*  financialModule_typeOfRententions_access,
       financialModule_typeOfRententions_create,
       financialModule_typeOfRententions_modify,
       financialModule_typeOfRententions_delete,
-      financialModule_typeOfRententions_export,
+      financialModule_typeOfRententions_export, */
       financialModule_suppliersTypes_access,
       financialModule_suppliersTypes_create,
       financialModule_suppliersTypes_modify,
@@ -1031,11 +1031,11 @@ class RoleActions extends React.Component {
         financialModule_iva_modify,
         financialModule_iva_delete,
         financialModule_iva_export,
-        financialModule_typeOfRententions_access,
+        /*        financialModule_typeOfRententions_access,
         financialModule_typeOfRententions_create,
         financialModule_typeOfRententions_modify,
         financialModule_typeOfRententions_delete,
-        financialModule_typeOfRententions_export,
+        financialModule_typeOfRententions_export, */
         financialModule_suppliersTypes_access,
         financialModule_suppliersTypes_create,
         financialModule_suppliersTypes_modify,
@@ -1390,11 +1390,11 @@ class RoleActions extends React.Component {
       financialModule_iva_modify,
       financialModule_iva_delete,
       financialModule_iva_export,
-      financialModule_typeOfRententions_access,
+      /*      financialModule_typeOfRententions_access,
       financialModule_typeOfRententions_create,
       financialModule_typeOfRententions_modify,
       financialModule_typeOfRententions_delete,
-      financialModule_typeOfRententions_export,
+      financialModule_typeOfRententions_export, */
       financialModule_suppliersTypes_access,
       financialModule_suppliersTypes_create,
       financialModule_suppliersTypes_modify,
@@ -3165,7 +3165,7 @@ class RoleActions extends React.Component {
                 </FormGroup>
               </FormControl>
             </AccordionDetails>
-            <AccordionDetails>
+            {/*  <AccordionDetails>
               <ListItem button style={{ width: '35%' }}>
                 <ListItemIcon>
                   <SendIcon />
@@ -3197,7 +3197,7 @@ class RoleActions extends React.Component {
                 </FormGroup>
               </FormControl>
 
-            </AccordionDetails>
+            </AccordionDetails> */}
             <AccordionDetails>
               <ListItem button style={{ width: '35%' }}>
                 <ListItemIcon>

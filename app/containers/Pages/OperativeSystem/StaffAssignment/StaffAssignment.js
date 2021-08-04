@@ -311,11 +311,11 @@ class StaffAssignment extends React.Component {
     const data = this.props.treeData;
     let selected = '';
     data.forEach(node => {
-      if (node.customer.id === nodeId) {
+      if (node.customer.clientId === nodeId) {
         selected = node;
       } else {
         node.operations.forEach(op => {
-          if (op.id === nodeId) {
+          if (op.commercialOperationId === nodeId) {
             selected = op;
           }
         });
@@ -325,7 +325,7 @@ class StaffAssignment extends React.Component {
   }
 
   getCustomerObject() {
-    const index = this.props.treeData.findIndex(obj => obj.customer.id === this.state.customerId);
+    const index = this.props.treeData.findIndex(obj => obj.customer.clientId === this.state.customerId);
     return index > -1 ? this.props.treeData[index].customer : null;
   }
 
@@ -334,9 +334,9 @@ class StaffAssignment extends React.Component {
     let id = -1;
     for (let i = 0; i < data.length; i++) {
       const element = data[i];
-      const operationIndex = element.operations.findIndex(obj => obj.id === operationId);
+      const operationIndex = element.operations.findIndex(obj => obj.commercialOperationId === operationId);
       if (operationIndex > -1) {
-        id = element.customer.id;
+        id = element.customer.clientId;
         break;
       }
     }
@@ -364,6 +364,7 @@ class StaffAssignment extends React.Component {
 
   // HANDLE ACTIONS
   handleToogleSelect(evt, nodeId) {
+    console.log("handleToogleSelect"+nodeId);
     self.setState({
       expanded: nodeId
     });
@@ -371,22 +372,24 @@ class StaffAssignment extends React.Component {
 
   handleNodeSelect(evt, nodeId) {
     const { getStaffAssignedByOperation, getEligibleStaff } = self.props;
-
+    console.log(nodeId);
     const selectedNode = self.getNodeValueById(nodeId);
+    console.log(selectedNode);
     const operation = !selectedNode.hasOwnProperty('operations') ? selectedNode : null;
-    const id = selectedNode.hasOwnProperty('operations') ? nodeId : self.getCustomerByOperation(operation.id);
+
+    const id = selectedNode.hasOwnProperty('operations') ? nodeId : self.getCustomerByOperation(operation.commercialOperationId);
 
     self.setState({
       selectedOperation: operation,
       customerId: id
     });
     const data = {
-      operationId: operation !== null ? operation.id : ''
+      operationId: operation !== null ? operation.commercialOperationId : ''
     };
     getStaffAssignedByOperation(data);
 
     if (operation !== null) {
-      getEligibleStaff(operation.id);
+      getEligibleStaff(operation.commercialOperationId);
     }
   }
 
@@ -491,7 +494,6 @@ class StaffAssignment extends React.Component {
                     </Tooltip>
                   </Box>
                 ) : null}
-
                 {treeData.length > 0
                   ? (
                     <TreeView
@@ -506,11 +508,11 @@ class StaffAssignment extends React.Component {
                       style={{ minWidth: '100%', minHeight: '87.5%', overflow: 'auto' }}
                     >
                       {treeData.map(el => (
-                        <StyledTreeItem key={el.customer.id} nodeId={el.customer.id} labelText={el.customer.name} labelIcon={CustomersIcon}>
+                        <StyledTreeItem key={el.customer.clientId} nodeId={el.customer.clientId} labelText={el.customer.name} labelIcon={CustomersIcon}>
                           {el.operations.map(operation => (
                             <StyledTreeItem
-                              key={operation.id}
-                              nodeId={operation.id}
+                              key={operation.commercialOperationId}
+                              nodeId={operation.commercialOperationId}
                               labelText={operation.name}
                               labelIcon={OperationIcon}
                               color="#3c8039"
