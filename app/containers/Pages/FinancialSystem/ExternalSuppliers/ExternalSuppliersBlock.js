@@ -253,7 +253,7 @@ class ExternalSuppliersBlock extends React.Component {
         },
         {
           label: 'Address',
-          name: 'address',
+          name: 'address.fullAddress',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -274,10 +274,10 @@ class ExternalSuppliersBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (fullAddress) => (
               <React.Fragment>
                 {
-                  address ? address.fullAddress : ''
+                  fullAddress || ''
                 }
               </React.Fragment>
             )
@@ -285,7 +285,7 @@ class ExternalSuppliersBlock extends React.Component {
         },
         {
           label: 'Country',
-          name: 'address',
+          name: 'address.city.stateCountry.country.countryName',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -306,17 +306,17 @@ class ExternalSuppliersBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (countryName) => (
               <React.Fragment>
                 {
-                  address ? address.city.stateCountry.country.countryName : ' '
+                  countryName || ' '
                 }
               </React.Fragment>
             )
           }
         },
         {
-          name: 'address',
+          name: 'address.city.stateCountry.stateName',
           label: 'State',
           options: {
             filter: true,
@@ -338,17 +338,17 @@ class ExternalSuppliersBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (stateName) => (
               <React.Fragment>
                 {
-                  address ? address.city.stateCountry.stateName : ' '
+                  stateName || ' '
                 }
               </React.Fragment>
             )
           }
         },
         {
-          name: 'address',
+          name: 'address.city.cityName',
           label: 'City',
           options: {
             filter: true,
@@ -370,10 +370,10 @@ class ExternalSuppliersBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (cityName) => (
               <React.Fragment>
                 {
-                  address ? address.city.cityName : ' '
+                  cityName || ''
                 }
               </React.Fragment>
             )

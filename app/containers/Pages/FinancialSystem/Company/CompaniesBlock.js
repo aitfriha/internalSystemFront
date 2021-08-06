@@ -60,7 +60,7 @@ class CompaniesBlock extends React.Component {
           name: 'logo',
           label: 'Logo',
           options: {
-            filter: true,
+            filter: false,
             customBodyRender: (value) => {
               const { classes } = this.props;
               return (
@@ -223,7 +223,7 @@ class CompaniesBlock extends React.Component {
         },
         {
           label: 'Address',
-          name: 'address',
+          name: 'address.fullAddress',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -247,7 +247,7 @@ class CompaniesBlock extends React.Component {
             customBodyRender: (address) => (
               <React.Fragment>
                 {
-                  address ? address.fullAddress : ''
+                  address
                 }
               </React.Fragment>
             )
@@ -255,7 +255,7 @@ class CompaniesBlock extends React.Component {
         },
         {
           label: 'Country',
-          name: 'address',
+          name: 'address.city.stateCountry.country.countryName',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -276,17 +276,17 @@ class CompaniesBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (country) => (
               <React.Fragment>
                 {
-                  address ? address.city.stateCountry.country.countryName : ' '
+                  country
                 }
               </React.Fragment>
             )
           }
         },
         {
-          name: 'address',
+          name: 'address.city.cityName',
           label: 'City',
           options: {
             filter: true,
@@ -308,17 +308,17 @@ class CompaniesBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (city) => (
               <React.Fragment>
                 {
-                  address ? address.city.cityName : ' '
+                  city
                 }
               </React.Fragment>
             )
           }
         },
         {
-          name: 'address',
+          name: 'address.city.stateCountry.stateName',
           label: 'State',
           options: {
             filter: true,
@@ -340,10 +340,10 @@ class CompaniesBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (address) => (
+            customBodyRender: (state) => (
               <React.Fragment>
                 {
-                  address ? address.city.stateCountry.stateName : ' '
+                  state
                 }
               </React.Fragment>
             )

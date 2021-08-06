@@ -48,13 +48,13 @@ class CurrencyBlock extends React.Component {
       columns: [
         {
           label: 'Currency Name',
-          name: 'typeOfCurrency',
+          name: 'typeOfCurrency.currencyName',
           options: {
             filter: true,
-            customBodyRender: (value) => (
+            customBodyRender: (currencyName) => (
               <React.Fragment>
                 {
-                  value.currencyName
+                  currencyName
                 }
               </React.Fragment>
             )
@@ -62,13 +62,13 @@ class CurrencyBlock extends React.Component {
         },
         {
           label: 'Currency Code',
-          name: 'typeOfCurrency',
+          name: 'typeOfCurrency.currencyCode',
           options: {
             filter: true,
-            customBodyRender: (value) => (
+            customBodyRender: (currencyCode) => (
               <React.Fragment>
                 {
-                  value.currencyCode
+                  currencyCode
                 }
               </React.Fragment>
             )

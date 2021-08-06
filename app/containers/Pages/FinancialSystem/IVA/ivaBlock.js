@@ -57,13 +57,13 @@ class IvaBlock extends React.Component {
         },
         {
           label: 'Country',
-          name: 'stateCountry',
+          name: 'stateCountry.country.countryName',
           options: {
             filter: true,
-            customBodyRender: (stateCountry) => (
+            customBodyRender: (country) => (
               <React.Fragment>
                 {
-                  stateCountry.country.countryName
+                  country
                 }
               </React.Fragment>
             )
@@ -71,13 +71,13 @@ class IvaBlock extends React.Component {
         },
         {
           label: 'State',
-          name: 'stateCountry',
+          name: 'stateCountry.stateName',
           options: {
             filter: true,
-            customBodyRender: (stateCountry) => (
+            customBodyRender: (stateName) => (
               <React.Fragment>
                 {
-                  stateCountry.stateName
+                  stateName
                 }
               </React.Fragment>
             )
