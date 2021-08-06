@@ -73,7 +73,7 @@ class ContractBlock extends React.Component {
           }
         },
         {
-          name: 'client',
+          name: 'client.name',
           label: 'Client',
           options: {
             filter: true,
@@ -97,13 +97,13 @@ class ContractBlock extends React.Component {
             }),
             customBodyRender: (value) => (
               <React.Fragment>
-                { value.name }
+                { value }
               </React.Fragment>
             )
           }
         },
         {
-          name: 'commercialOperation',
+          name: 'commercialOperation.name',
           label: 'Operation',
           options: {
             filter: true,
@@ -127,14 +127,14 @@ class ContractBlock extends React.Component {
             }),
             customBodyRender: (value) => (
               <React.Fragment>
-                { value.name }
+                { value }
               </React.Fragment>
             )
           }
         },
         {
           label: 'Company',
-          name: 'financialCompany',
+          name: 'financialCompany.name',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -157,14 +157,14 @@ class ContractBlock extends React.Component {
             }),
             customBodyRender: (value) => (
               <React.Fragment>
-                { value.name }
+                { value }
               </React.Fragment>
             )
           }
         },
         {
           label: 'State',
-          name: 'contractStatus',
+          name: 'contractStatus.statusName',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -187,7 +187,7 @@ class ContractBlock extends React.Component {
             }),
             customBodyRender: (value) => (
               <React.Fragment>
-                { value.statusName }
+                { value }
               </React.Fragment>
             )
           }
@@ -340,7 +340,7 @@ class ContractBlock extends React.Component {
         },
         {
           label: 'Currency',
-          name: 'currency',
+          name: 'currency.typeOfCurrency.currencyCode',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -363,7 +363,7 @@ class ContractBlock extends React.Component {
             }),
             customBodyRender: (value) => (
               <React.Fragment>
-                { value.typeOfCurrency.currencyCode }
+                { value }
               </React.Fragment>
             )
           }

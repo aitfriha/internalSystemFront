@@ -1327,7 +1327,7 @@ class EconomicStaffPaymentBlock extends React.Component {
         customToolbar: () => (
           <CustomToolbar
             csvData={economicStaffsYear}
-            hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_create}
+            hasAddRole={false}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_export}
           />
         )
@@ -1344,7 +1344,7 @@ class EconomicStaffPaymentBlock extends React.Component {
         customToolbar: () => (
           <CustomToolbar
             csvData={economicStaffsMonth}
-            hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_create}
+            hasAddRole={false}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_export}
           />
         )
@@ -1361,7 +1361,7 @@ class EconomicStaffPaymentBlock extends React.Component {
         customToolbar: () => (
           <CustomToolbar
             csvData={economicStaffsExtra}
-            hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_create}
+            hasAddRole={false}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_export}
           />
         )

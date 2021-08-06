@@ -194,7 +194,7 @@ class LegalCategoryType extends React.Component {
         const replaceLegalCategoryTypeList = allLegalCategoryType.filter(
           type => type.legalCategoryTypeId
               !== legalCategoryTypeSelected.legalCategoryTypeId
-            && type.companyName === legalCategoryTypeSelected.companyName
+         //   && type.companyName === legalCategoryTypeSelected.companyName
         );
         this.setState({
           isDeleteDialogOpen: true,
