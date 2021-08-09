@@ -18,7 +18,7 @@ class Billing extends React.Component {
           <meta property="twitter:title" content={title} />
           <meta property="twitter:description" content={description} />
         </Helmet>
-        <PapperBlock title="Billing" icon="ios-cash" desc="Some text description">
+        <PapperBlock title="Billing" icon="ios-cash" desc="">
           <BillingBlock />
         </PapperBlock>
       </div>

@@ -114,13 +114,13 @@ class PurchaseOrderBlock extends React.Component {
       columns: [
         {
           label: 'Client',
-          name: 'client',
+          name: 'client.name',
           options: {
             filter: true,
-            customBodyRender: (client) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  client ? client.name : '---'
+                  name || '---'
                 }
               </React.Fragment>
             ),
@@ -178,13 +178,13 @@ class PurchaseOrderBlock extends React.Component {
         },
         {
           label: 'Contract Client',
-          name: 'financialContract',
+          name: 'financialContract.contractTitle',
           options: {
             filter: true,
-            customBodyRender: (financialContract) => (
+            customBodyRender: (contractTitle) => (
               <React.Fragment>
                 {
-                  financialContract ? financialContract.contractTitle : '---'
+                  contractTitle || '---'
                 }
               </React.Fragment>
             ),
@@ -209,14 +209,14 @@ class PurchaseOrderBlock extends React.Component {
           }
         },
         {
-          name: 'companyEmit',
+          name: 'companyEmit.name',
           label: 'Company Data Emit ',
           options: {
             filter: true,
-            customBodyRender: (companyEmit) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  companyEmit.name
+                  name
                 }
               </React.Fragment>
             ),
@@ -294,7 +294,7 @@ class PurchaseOrderBlock extends React.Component {
           name: 'companyLogo',
           label: 'Logo',
           options: {
-            filter: true,
+            filter: false,
             customBodyRender: (value) => {
               const { classes } = this.props;
               return (
@@ -356,14 +356,14 @@ class PurchaseOrderBlock extends React.Component {
           }
         },
         {
-          name: 'internalSupplierReception',
+          name: 'internalSupplierReception.name',
           label: 'Internal Reception Supplier',
           options: {
             filter: true,
-            customBodyRender: (value) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  value ? value.name : '---'
+                  name || '---'
                 }
               </React.Fragment>
             ),
@@ -391,7 +391,7 @@ class PurchaseOrderBlock extends React.Component {
           name: 'internalSupplierReception',
           label: 'Supplier Logo',
           options: {
-            filter: true,
+            filter: false,
             customBodyRender: (value) => (
               <React.Fragment>
                 {
@@ -420,14 +420,14 @@ class PurchaseOrderBlock extends React.Component {
           }
         },
         {
-          name: 'externalSupplierReception',
+          name: 'externalSupplierReception.companyName',
           label: 'External Reception Supplier',
           options: {
             filter: true,
-            customBodyRender: (value) => (
+            customBodyRender: (companyName) => (
               <React.Fragment>
                 {
-                  value ? value.companyName : '---'
+                  companyName || '---'
                 }
               </React.Fragment>
             ),
@@ -559,14 +559,14 @@ class PurchaseOrderBlock extends React.Component {
           }
         },
         {
-          name: 'currency',
+          name: 'currency.typeOfCurrency.currencyCode',
           label: 'Currency',
           options: {
             filter: true,
-            customBodyRender: (value) => (
+            customBodyRender: (currencyCode) => (
               <React.Fragment>
                 {
-                  value ? value.typeOfCurrency.currencyCode : ''
+                  currencyCode || ''
                 }
               </React.Fragment>
             ),

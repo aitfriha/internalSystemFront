@@ -337,7 +337,7 @@ class BillingBlock extends React.Component {
         },
         {
           label: 'Contractor',
-          name: 'financialCompany',
+          name: 'financialCompany.name',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -361,7 +361,7 @@ class BillingBlock extends React.Component {
             customBodyRender: (financialCompany) => (
               <React.Fragment>
                 {
-                  financialCompany.name
+                  financialCompany
                 }
               </React.Fragment>
             )
@@ -369,7 +369,7 @@ class BillingBlock extends React.Component {
         },
         {
           label: 'Client',
-          name: 'client',
+          name: 'client.name',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -390,10 +390,10 @@ class BillingBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (client) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  client.name
+                  name || ''
                 }
               </React.Fragment>
             )
@@ -401,7 +401,7 @@ class BillingBlock extends React.Component {
         },
         {
           label: 'Operation',
-          name: 'commercialOperation',
+          name: 'commercialOperation.name',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -422,10 +422,10 @@ class BillingBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (commercialOperation) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  commercialOperation.name
+                  name
                 }
               </React.Fragment>
             )
@@ -433,7 +433,7 @@ class BillingBlock extends React.Component {
         },
         {
           label: 'Client Signed',
-          name: 'clientSigned',
+          name: 'clientSigned.name',
           options: {
             filter: true,
             setCellProps: () => ({
@@ -454,10 +454,10 @@ class BillingBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (clientSigned) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  clientSigned.name
+                  name
                 }
               </React.Fragment>
             )
@@ -514,7 +514,7 @@ class BillingBlock extends React.Component {
           }
         },
         {
-          name: 'currency',
+          name: 'currency.typeOfCurrency.currencyCode',
           label: 'Currency',
           options: {
             filter: true,
@@ -539,7 +539,7 @@ class BillingBlock extends React.Component {
             customBodyRender: (currency) => (
               <React.Fragment>
                 {
-                  currency.typeOfCurrency.currencyCode
+                  currency
                 }
               </React.Fragment>
             )
@@ -571,7 +571,7 @@ class BillingBlock extends React.Component {
           }
         },
         {
-          name: 'iva',
+          name: 'iva.value',
           label: 'IVA %',
           options: {
             filter: true,
@@ -596,7 +596,7 @@ class BillingBlock extends React.Component {
             customBodyRender: (iva) => (
               <React.Fragment>
                 {
-                  iva.value ? iva.value : ''
+                  iva ||''
                 }
               </React.Fragment>
             )
