@@ -115,13 +115,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Client',
-          name: 'client',
+          name: 'client.name',
           options: {
             filter: true,
-            customBodyRender: (client) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  client ? client.name : '---'
+                  name || '---'
                 }
               </React.Fragment>
             ),
@@ -147,13 +147,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Contract Client',
-          name: 'financialContract',
+          name: 'financialContract.contractTitle',
           options: {
             filter: true,
-            customBodyRender: (financialContract) => (
+            customBodyRender: (contractTitle) => (
               <React.Fragment>
                 {
-                  financialContract ? financialContract.contractTitle : '---'
+                  contractTitle || '---'
                 }
               </React.Fragment>
             ),
@@ -236,13 +236,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Supplier Name',
-          name: 'externalSupplier',
+          name: 'externalSupplier.companyName',
           options: {
             filter: true,
-            customBodyRender: (externalSupplier) => (
+            customBodyRender: (companyName) => (
               <React.Fragment>
                 {
-                  externalSupplier ? externalSupplier.companyName : '---'
+                  companyName || '---'
                 }
               </React.Fragment>
             ),
@@ -268,13 +268,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Supplier Code',
-          name: 'externalSupplier',
+          name: 'externalSupplier.code',
           options: {
             filter: true,
-            customBodyRender: (externalSupplier) => (
+            customBodyRender: (code) => (
               <React.Fragment>
                 {
-                  externalSupplier ? externalSupplier.code : '---'
+                  code || '---'
                 }
               </React.Fragment>
             ),
@@ -300,13 +300,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Company Name',
-          name: 'financialCompany',
+          name: 'financialCompany.name',
           options: {
             filter: true,
-            customBodyRender: (financialCompany) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  financialCompany ? financialCompany.name : '---'
+                  name || '---'
                 }
               </React.Fragment>
             ),
@@ -332,13 +332,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Company Code',
-          name: 'financialCompany',
+          name: 'financialCompany.code',
           options: {
             filter: true,
-            customBodyRender: (financialCompany) => (
+            customBodyRender: (code) => (
               <React.Fragment>
                 {
-                  financialCompany ? financialCompany.code : '---'
+                  code || '---'
                 }
               </React.Fragment>
             ),
@@ -389,13 +389,13 @@ class SuppliersContractBlock extends React.Component {
         },
         {
           label: 'Currency',
-          name: 'currency',
+          name: 'currency.typeOfCurrency.currencyCode',
           options: {
             filter: true,
-            customBodyRender: (currency) => (
+            customBodyRender: (currencyCode) => (
               <React.Fragment>
                 {
-                  currency ? currency.typeOfCurrency.currencyCode : ''
+                  currencyCode || ''
                 }
               </React.Fragment>
             ),
@@ -523,15 +523,12 @@ class SuppliersContractBlock extends React.Component {
 
   componentDidMount() {
     SuppliersContractService.getSuppliersContract().then(result => {
-      console.log(result);
       this.setState({ datas: result.data });
     });
     FinancialCompanyService.getCompany().then(result => {
-      console.log(result);
       this.setState({ companies: result.data });
     });
     ExternalSuppliersService.getExternalSuppliers().then(result => {
-      console.log(result);
       this.setState({ externalSuppliers: result.data });
     });
     CurrencyService.getFilteredCurrency().then(result => {
@@ -543,10 +540,8 @@ class SuppliersContractBlock extends React.Component {
     ContractService.getContract().then(result => {
       // eslint-disable-next-line array-callback-return
       this.setState({ contracts: result.data, contractsClient: result.data });
-      console.log(this.state);
     });
     PurchaseOrderService.getPurchaseOrder().then(result => {
-      console.log(result);
       this.setState({ purchaseOrders: result.data, purchaseOrdersClient: result.data });
     });
     const {

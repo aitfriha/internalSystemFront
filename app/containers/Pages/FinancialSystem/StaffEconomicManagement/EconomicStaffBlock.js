@@ -104,7 +104,7 @@ class EconomicStaffBlock extends React.Component {
           }
         },
         {
-          name: 'staff',
+          name: 'staff.firstName',
           label: 'First Name',
           options: {
             filter: true,
@@ -126,10 +126,10 @@ class EconomicStaffBlock extends React.Component {
                 zIndex: 101
               }
             }),
-            customBodyRender: (staff) => (
+            customBodyRender: (firstName) => (
               <React.Fragment>
                 {
-                  staff ? staff.firstName : ''
+                  firstName || ''
                 }
               </React.Fragment>
             )
@@ -236,7 +236,7 @@ class EconomicStaffBlock extends React.Component {
           }
         },
         {
-          name: 'currency',
+          name: 'currency.typeOfCurrency.currencyCode',
           label: 'Currency',
           options: {
             filter: true,
@@ -261,7 +261,7 @@ class EconomicStaffBlock extends React.Component {
             customBodyRender: (value) => (
               <React.Fragment>
                 {
-                  value.typeOfCurrency.currencyCode
+                  value
                 }
               </React.Fragment>
             )
