@@ -159,6 +159,7 @@ class PurchaseOrderBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add Purchase-Acceptance"
             tooltip="add New Purchase Order"
+            fileName="Purchase order acceptance"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_purchaseOrderAcceptance_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_purchaseOrderAcceptance_export}
           />

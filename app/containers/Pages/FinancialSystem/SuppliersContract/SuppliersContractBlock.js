@@ -715,6 +715,7 @@ class SuppliersContractBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add-Suppliers-Contract"
             tooltip="Add New Supplier Contract"
+            fileName="Suppliers contract"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersContracts_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersContracts_export}
           />

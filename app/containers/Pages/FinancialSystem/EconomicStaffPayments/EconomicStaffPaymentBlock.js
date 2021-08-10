@@ -1328,6 +1328,7 @@ class EconomicStaffPaymentBlock extends React.Component {
           <CustomToolbar
             csvData={economicStaffsYear}
             hasAddRole={false}
+            fileName="Staff economic payment year"
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_export}
           />
         )
@@ -1345,6 +1346,7 @@ class EconomicStaffPaymentBlock extends React.Component {
           <CustomToolbar
             csvData={economicStaffsMonth}
             hasAddRole={false}
+            fileName="Staff economic payment month"
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_export}
           />
         )
@@ -1362,6 +1364,7 @@ class EconomicStaffPaymentBlock extends React.Component {
           <CustomToolbar
             csvData={economicStaffsExtra}
             hasAddRole={false}
+            fileName="Staff economic payment extraordinary"
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicPayments_export}
           />
         )

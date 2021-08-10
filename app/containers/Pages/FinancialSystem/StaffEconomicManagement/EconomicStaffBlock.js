@@ -852,6 +852,7 @@ class EconomicStaffBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add Economic Staff"
             tooltip="Add New Economic Staff"
+            fileName="Staff economic management"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicManagement_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_staffEconomicManagement_export}
           />

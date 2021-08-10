@@ -835,6 +835,7 @@ class BillingBlock extends React.Component {
           csvData={datas}
           url="/app/gestion-financial/Add-Bill"
           tooltip="Add New Bill"
+          fileName="Billing"
           hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_billingManagement_create}
           hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_billingManagement_export}
         />

@@ -631,6 +631,7 @@ class ContractBlock extends React.Component {
           csvData={datas}
           url="/app/gestion-financial/Add-Contract"
           tooltip="add new Contract"
+          fileName="Contracts"
           hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_contracts_create}
           hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_contracts_export}
         />

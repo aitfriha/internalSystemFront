@@ -167,6 +167,7 @@ class StatusBlock extends React.Component {
           csvData={datas}
           url="/app/gestion-financial/Contract-Status/Add-Status"
           tooltip="add new Status"
+          fileName="Contract status"
           hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_contractStatus_create}
           hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_contractStatus_export}
         />

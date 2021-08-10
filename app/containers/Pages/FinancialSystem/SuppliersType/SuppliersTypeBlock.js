@@ -290,6 +290,7 @@ class SuppliersTypeBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add-Suppliers"
             tooltip="Add New Supplier Type"
+            fileName="Suppliers type"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersTypes_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersTypes_export}
           />

@@ -278,6 +278,7 @@ class CurrencyBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add-Currency"
             tooltip="add new Currency"
+            fileName="Currency management"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_currencyManagement_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_currencyManagement_export}
           />

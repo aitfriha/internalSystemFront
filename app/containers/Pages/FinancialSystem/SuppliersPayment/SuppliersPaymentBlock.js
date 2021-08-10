@@ -670,6 +670,7 @@ class SuppliersPaymentBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add Suppliers-Payment"
             tooltip="Add New Supplier Payment"
+            fileName="Suppliers payment"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersPayments_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersPayments_export}
           />

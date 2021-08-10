@@ -575,6 +575,7 @@ class CompaniesBlock extends React.Component {
           csvData={datas}
           url="/app/gestion-financial/Company/Add-Company"
           tooltip="add new Company"
+          fileName="Companies"
           hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_companies_create}
           hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_companies_export}
         />

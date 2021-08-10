@@ -574,6 +574,7 @@ class ExternalSuppliersBlock extends React.Component {
           csvData={datas}
           url="/app/gestion-financial/Add-External Suppliers"
           tooltip="Add New External Supplier"
+          fileName="External suppliers"
           hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersTypes_create}
           hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_suppliersTypes_export}
         />

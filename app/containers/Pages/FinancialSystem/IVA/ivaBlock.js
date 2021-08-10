@@ -290,6 +290,7 @@ class IvaBlock extends React.Component {
             csvData={datas}
             url="/app/gestion-financial/Add-IVA"
             tooltip="add new I.V.A"
+            fileName="Iva"
             hasAddRole={thelogedUser.userRoles[0].actionsNames.financialModule_iva_create}
             hasExportRole={thelogedUser.userRoles[0].actionsNames.financialModule_iva_export}
           />
