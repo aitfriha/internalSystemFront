@@ -708,6 +708,7 @@ class SuppliersContractBlock extends React.Component {
         filterType: 'dropdown',
         responsive: 'stacked',
         download: exportButton,
+        downloadOptions: { filename: 'Suppliers contract.csv' },
         print: exportButton,
         rowsPerPage: 10,
         customToolbar: () => (

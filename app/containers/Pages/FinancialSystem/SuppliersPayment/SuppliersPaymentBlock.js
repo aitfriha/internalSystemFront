@@ -663,6 +663,7 @@ class SuppliersPaymentBlock extends React.Component {
         filterType: 'dropdown',
         responsive: 'stacked',
         download: exportButton,
+        downloadOptions: { filename: 'Suppliers payment.csv' },
         print: exportButton,
         rowsPerPage: 10,
         customToolbar: () => (

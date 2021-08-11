@@ -1194,6 +1194,7 @@ class PurchaseOrderBlock extends React.Component {
         responsive: 'stacked',
         download: exportButton,
         print: exportButton,
+        downloadOptions: { filename: 'Purchase order management.csv' },
         rowsPerPage: 10,
         customToolbar: () => (
           <CustomToolbar

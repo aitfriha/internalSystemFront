@@ -283,6 +283,7 @@ class IvaBlock extends React.Component {
         filterType: 'dropdown',
         responsive: 'stacked',
         download: exportButton,
+        downloadOptions: { filename: 'Iva.csv' },
         print: exportButton,
         rowsPerPage: 10,
         customToolbar: () => (

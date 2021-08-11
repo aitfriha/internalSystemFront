@@ -15,15 +15,11 @@ class CustomToolbar extends React.Component {
     const { csvData, fileName } = this.props;
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
-    // csvData.forEach((v) => { delete v.actionTypeId; });
-    // console.log(csvData);
+
     const dup_array = [];
     for (let i = 0, len = csvData.length; i < len; ++i) dup_array[i] = csvData[i]; dup_array.forEach((v) => { delete v.actionTypeId; });
     const ws = XLSX.utils.json_to_sheet(dup_array);
-    if (fileName !== null) {
 
-    }
-    console.log(fileName);
     const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const data = new Blob([excelBuffer], { type: fileType });

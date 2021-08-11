@@ -12,6 +12,7 @@ import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import CurrencyService from '../../../Services/CurrencyService';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -136,8 +137,14 @@ class TypeOfCurrencyBlock extends React.Component {
       const code = currencyCode.toString();
       if (code.length < 4) {
         TypeOfCurrencylService.updateTypeOfCurrency(Currency).then(result => {
-          this.setState({ datas: result.data, openPopUp: false });
-        });
+          if (result.status === 200) {
+            notification('success', 'Type of currency updated');
+            this.setState({ datas: result.data, openPopUp: false });
+          } else {
+            notification('danger', 'Type of currency not updated');
+          }
+        })
+          .catch(err => notification('danger', err.response.data.errors.message));
       }
     };
 
@@ -162,6 +169,7 @@ class TypeOfCurrencyBlock extends React.Component {
         responsive: 'stacked',
         download: exportButton,
         print: exportButton,
+        downloadOptions: { filename: 'Currency types.csv' },
         rowsPerPage: 10,
         customToolbar: () => (
           <CustomToolbar
@@ -240,7 +248,7 @@ class TypeOfCurrencyBlock extends React.Component {
                   color="primary"
                   onClick={this.handleSave}
                 >
-                            save
+                            update
                 </Button>
               ) : null}
             </DialogActions>
@@ -256,20 +264,16 @@ class TypeOfCurrencyBlock extends React.Component {
             fullWidth=""
             maxWidth=""
           >
-            <DialogTitle id="alert-dialog-slide-title"> Operation Denied </DialogTitle>
+            <DialogTitle id="alert-dialog-slide-title"> Delete Denied </DialogTitle>
             <DialogContent dividers>
               <Typography
                 style={{
-                  color: '#000',
-                  fontFamily: 'sans-serif , Arial',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  opacity: 0.4,
+                  color: 'red',
                   marginRight: 20,
                   width: '100%'
                 }}
               >
-                 This Currency is used in other module of this application
+                 You can't delete this currency type because its used in other module
               </Typography>
             </DialogContent>
             <DialogActions>

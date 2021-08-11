@@ -23,6 +23,7 @@ import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import CurrencyService from '../../../Services/CurrencyService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -109,11 +110,11 @@ class CurrencyBlock extends React.Component {
                     <DetailsIcon color="secondary" />
                   </IconButton>
                 ) : null}
-                {thelogedUser.userRoles[0].actionsNames.financialModule_currencyManagement_delete ? (
+                {/*                {thelogedUser.userRoles[0].actionsNames.financialModule_currencyManagement_delete ? (
                   <IconButton onClick={() => this.handleDelete(tableMeta)}>
                     <DeleteIcon color="primary" />
                   </IconButton>
-                ) : null}
+                ) : null} */}
               </React.Fragment>
             )
           }
@@ -180,8 +181,14 @@ class CurrencyBlock extends React.Component {
         currencyId, year, month, changeFactor, typeOfCurrency
       };
       CurrencyService.updateCurrency(Currency).then(result => {
+        if (result.status === 200) {
+          notification('success', 'Currency Updated');
+        } else {
+          notification('danger', 'Currency not Added');
+        }
         this.setState({ datas: result.data, AllDatas: result.data, openPopUp: false });
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors.message));
     };
 
     handleChange = (ev) => {
@@ -272,6 +279,7 @@ class CurrencyBlock extends React.Component {
         responsive: 'stacked',
         download: exportButton,
         print: exportButton,
+        downloadOptions: { filename: 'Currency management.csv' },
         rowsPerPage: 10,
         customToolbar: () => (
           <CustomToolbar
@@ -447,7 +455,7 @@ class CurrencyBlock extends React.Component {
                   color="primary"
                   onClick={this.handleSave}
                 >
-                            save
+                            update
                 </Button>
               ) : null}
             </DialogActions>

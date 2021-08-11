@@ -125,7 +125,6 @@ class AddFinancialCompany extends React.Component {
         // eslint-disable-next-line react/prop-types
         allCountrys, allStateCountrys, allCitys, classes
       } = this.props;
-      console.log(this.state);
       const title = brand.name + ' - Companies';
       const description = brand.desc;
       // eslint-disable-next-line react/prop-types
@@ -285,6 +284,7 @@ class AddFinancialCompany extends React.Component {
                       {...params}
                       label="Choose the country"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -300,6 +300,7 @@ class AddFinancialCompany extends React.Component {
                       {...params}
                       label="Choose the state"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -315,6 +316,7 @@ class AddFinancialCompany extends React.Component {
                       {...params}
                       label="Choose the city"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -335,7 +337,6 @@ class AddFinancialCompany extends React.Component {
                   variant="outlined"
                   fullWidth
                   value={postCode}
-                  required
                   name="postCode"
                   className={classes.textField}
                   onChange={this.handleChange}

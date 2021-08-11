@@ -160,6 +160,7 @@ class StatusBlock extends React.Component {
       filterType: 'dropdown',
       responsive: 'stacked',
       download: exportButton,
+      downloadOptions: { filename: 'Contract status.csv' },
       print: exportButton,
       rowsPerPage: 10,
       customToolbar: () => (

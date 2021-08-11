@@ -13,6 +13,7 @@ import history from '../../../../utils/history';
 import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
 
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -45,9 +46,14 @@ class AddTypeOfCurrency extends React.Component {
       const code = currencyCode.toString();
       if (code.length < 4) {
         TypeOfCurrencylService.saveTypeOfCurrency(TypeOfCurrency).then(result => {
-          console.log(result);
+          if (result.status === 200) {
+            notification('success', 'Type of currency Added');
+          } else {
+            notification('danger', 'Type of currency not Added');
+          }
           history.push('/app/gestion-financial/Currency-Type');
-        });
+        })
+          .catch(err => notification('danger', err.response.data.errors.message));
       }
     }
 
@@ -60,7 +66,6 @@ class AddTypeOfCurrency extends React.Component {
     };
 
     render() {
-      console.log(this.state);
       const title = brand.name + ' - Add New Currency';
       const { desc } = brand;
       // eslint-disable-next-line react/prop-types

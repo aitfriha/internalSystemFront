@@ -568,6 +568,7 @@ class CompaniesBlock extends React.Component {
       filterType: 'dropdown',
       responsive: 'stacked',
       download: exportButton,
+      downloadOptions: { filename: 'Companies.csv' },
       print: exportButton,
       rowsPerPage: 10,
       customToolbar: () => (

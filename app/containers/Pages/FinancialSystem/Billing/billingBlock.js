@@ -828,6 +828,7 @@ class BillingBlock extends React.Component {
       filterType: 'dropdown',
       responsive: 'stacked',
       download: exportButton,
+      downloadOptions: { filename: 'Billing.csv' },
       print: exportButton,
       rowsPerPage: 10,
       customToolbar: () => (

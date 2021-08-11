@@ -567,6 +567,7 @@ class ExternalSuppliersBlock extends React.Component {
       filterType: 'dropdown',
       responsive: 'stacked',
       download: exportButton,
+      downloadOptions: { filename: 'External suppliers.csv' },
       print: exportButton,
       rowsPerPage: 10,
       customToolbar: () => (

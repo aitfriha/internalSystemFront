@@ -283,6 +283,7 @@ class SuppliersTypeBlock extends React.Component {
         filterType: 'dropdown',
         responsive: 'stacked',
         download: exportButton,
+        downloadOptions: { filename: 'Suppliers type.csv' },
         print: exportButton,
         rowsPerPage: 10,
         customToolbar: () => (

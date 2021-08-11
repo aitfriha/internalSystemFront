@@ -17,6 +17,7 @@ import CurrencyService from '../../../Services/CurrencyService';
 import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
 
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -55,9 +56,14 @@ class AddCurrency extends React.Component {
         year, month, changeFactor, typeOfCurrency
       };
       CurrencyService.saveCurrency(Currency).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'Currency Added');
+        } else {
+          notification('danger', 'Currency not Added');
+        }
         history.push('/app/gestion-financial/Currency-Management');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors.message));
     }
 
     handleGoBack = () => {
@@ -126,7 +132,6 @@ class AddCurrency extends React.Component {
           value: 12,
           label: 'December ',
         }];
-      console.log(this.state);
       const title = brand.name + ' - Add New Currency';
       const { desc } = brand;
       // eslint-disable-next-line react/prop-types
