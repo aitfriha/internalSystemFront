@@ -731,6 +731,7 @@ class CompaniesBlock extends React.Component {
                       {...params}
                       label="Choose the country"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -747,6 +748,7 @@ class CompaniesBlock extends React.Component {
                       {...params}
                       label="Choose the state"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -763,6 +765,7 @@ class CompaniesBlock extends React.Component {
                       {...params}
                       label="Choose the city"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -785,7 +788,6 @@ class CompaniesBlock extends React.Component {
                   variant="outlined"
                   fullWidth
                   value={postCode}
-                  required
                   name="postCode"
                   onChange={this.handleChange}
                 />

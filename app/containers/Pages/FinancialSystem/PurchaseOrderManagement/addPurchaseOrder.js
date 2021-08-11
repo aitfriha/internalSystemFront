@@ -830,7 +830,6 @@ class AddPurchaseOrder extends React.Component {
                     rows={1}
                     onChange={event => this.handleConcept(event, row)}
                     fullWidth
-                    required
                     InputLabelProps={{
                       shrink: true,
                     }}

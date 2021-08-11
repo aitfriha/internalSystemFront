@@ -756,10 +756,6 @@ class AddBilling extends React.Component {
               </Grid>
             </Grid>
             <br />
-            <Typography variant="subtitle2" component="h2" color="primary">
-                Possible Retentions
-            </Typography>
-            <br />
             <br />
             <div align="center">
               <Button size="small" color="inherit" onClick={this.handleGoBack}>Cancel</Button>

@@ -167,6 +167,7 @@ class AddIVA extends React.Component {
                       {...params}
                       label="Choose the country"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -184,6 +185,7 @@ class AddIVA extends React.Component {
                       {...params}
                       label="Choose the state"
                       variant="outlined"
+                      required
                     />
                   )}
                 />

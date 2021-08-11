@@ -144,7 +144,6 @@ class AddStatus extends React.Component {
                   variant="outlined"
                   name="description"
                   value={description}
-                  required
                   fullWidth
                   onChange={this.handleChange}
                   className={classes.textField}

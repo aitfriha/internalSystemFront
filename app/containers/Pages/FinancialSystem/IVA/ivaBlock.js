@@ -358,6 +358,7 @@ class IvaBlock extends React.Component {
                           {...params}
                           label="Choose the country"
                           variant="outlined"
+                          required
                         />
                       )}
                     />
@@ -376,6 +377,7 @@ class IvaBlock extends React.Component {
                           {...params}
                           label="Choose the state"
                           variant="outlined"
+                          required
                         />
                       )}
                     />
