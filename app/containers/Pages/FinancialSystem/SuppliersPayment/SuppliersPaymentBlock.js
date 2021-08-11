@@ -676,7 +676,6 @@ class SuppliersPaymentBlock extends React.Component {
           />
         )
       };
-
       return (
         <div>
           <MUIDataTable
