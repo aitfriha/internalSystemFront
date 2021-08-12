@@ -636,8 +636,8 @@ class AddContract extends React.Component {
       conceptType, conceptValue, conceptValueEuro, conceptValueLocal, conceptTotalAmount, conceptTotalAmountEuro,
       signedDate, startDate, endDate, finalReelDate, contractTradeVolume, companies, commercialOperations, clients, contractTradeVolumeEuro,
       penaltyMaxType, currencyId, currencyCode, paymentsBDDays, penalties, penaltyQuantity, penaltyValue, levels, amountInsuredEuro,
-      penaltyCost, penaltyPer, penaltyMaxValue, purchaseOrder, penaltiesListe, purchaseOrderNumber, purchaseOrderReceiveDate, purchaseOrders,
-      insure, firstDayInsured, lastDayInsured, amountInsured, proposal, open, open2, open3, open4, level1, level2, level3, openDoc, contractDocDescreption
+      penaltyCost, penaltyPer, penaltyMaxValue, penaltiesListe, purchaseOrderNumber, purchaseOrderReceiveDate, purchaseOrders,
+      insure, firstDayInsured, lastDayInsured, amountInsured, proposal, open, open3, open4, level1, level2, level3, openDoc, contractDocDescreption
     } = this.state;
     const title = brand.name + ' - Blank Page';
     const description = brand.desc;
@@ -760,7 +760,7 @@ class AddContract extends React.Component {
               {openDoc === false ? (
                 <div />
               ) : (
-                <FormControl fullWidth required>
+                <FormControl fullWidth >
                   <br />
                   <input
                     style={{ display: 'none' }}
@@ -785,7 +785,7 @@ class AddContract extends React.Component {
                             component="span"
                             startIcon={<Image color="primary" />}
                           >
-                                Documentation File
+                                Documentation File aaaa
                           </Button>
                         </Grid>
                         <Grid xs={4}>
@@ -796,7 +796,6 @@ class AddContract extends React.Component {
                             value={contractDocDescreption[row]}
                             onChange={event => this.handleConcept(event, row)}
                             fullWidth
-                            required
                           />
                         </Grid>
                         <Grid xs={1}>
@@ -912,6 +911,7 @@ class AddContract extends React.Component {
                       {...params}
                       label="Choose the country"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -929,6 +929,7 @@ class AddContract extends React.Component {
                       {...params}
                       label="Choose the state"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -946,6 +947,7 @@ class AddContract extends React.Component {
                       {...params}
                       label="Choose the city"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -1021,7 +1023,6 @@ class AddContract extends React.Component {
                   shrink: true,
                 }}
                 fullWidth
-                required
               />
             </Grid>
           </Grid>
@@ -1381,83 +1382,85 @@ class AddContract extends React.Component {
               )}
             </Grid>
             <Grid item xs={12} sm={7} md={3}>
-              <FormControlLabel
+{/*              <FormControlLabel
                 id="purchaseOrder"
                 name="purchaseOrder"
                 value={purchaseOrder}
                 control={<Checkbox color="primary" onChange={this.handleCheck2} />}
                 label="Purchase Order"
                 labelPlacement="start"
-              />
-              {open2 === false ? (
-                <div />
-              ) : (
-                <div>
-                  {purchaseOrders.map((row) => (
-                    <Grid container spacing={2}>
-                      <Grid item xs={8}>
-                        <TextField
-                          id="purchaseOrderNumber"
-                          label={'Purchase Order ' + row}
-                          type="number"
-                          name="purchaseOrderNumber"
-                          value={purchaseOrderNumber[row]}
-                          onChange={event => this.handleConcept(event, row)}
-                          InputLabelProps={{
-                            shrink: true,
-                          }}
-                          fullWidth
-                        />
-                      </Grid>
-                      <Grid item xs={4}>
-                        <br />
-                        <IconButton size="small" color="primary" onClick={() => this.handleOpenPurchase()}>
-                          <AddIcon />
-                        </IconButton>
-                        <IconButton size="small" color="primary" onClick={() => this.handleDeletePurchase(row)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </Grid>
+              />*/}
+              <br />
+              <Typography variant="subtitle2" component="h2" color="primary">
+                Purchase Order *
+              </Typography>
+              <br />
+              <div>
+                {purchaseOrders.map((row) => (
+                  <Grid container spacing={2}>
+                    <Grid item xs={8}>
+                      <TextField
+                        id="purchaseOrderNumber"
+                        label={'Purchase Order ' + row}
+                        type="number"
+                        name="purchaseOrderNumber"
+                        value={purchaseOrderNumber[row]}
+                        onChange={event => this.handleConcept(event, row)}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        fullWidth
+                        required
+                      />
                     </Grid>
-                  ))}
-                  <TextField
-                    id="purchaseOrderReceiveDate"
-                    label="Purchase Order Receive Date"
-                    type="date"
-                    name="purchaseOrderReceiveDate"
-                    value={purchaseOrderReceiveDate}
-                    onChange={this.handleChange}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    fullWidth
-                    required
+                    <Grid item xs={4}>
+                      <br />
+                      <IconButton size="small" color="primary" onClick={() => this.handleOpenPurchase()}>
+                        <AddIcon />
+                      </IconButton>
+                      <IconButton size="small" color="primary" onClick={() => this.handleDeletePurchase(row)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                ))}
+                <TextField
+                  id="purchaseOrderReceiveDate"
+                  label="Purchase Order Receive Date"
+                  type="date"
+                  name="purchaseOrderReceiveDate"
+                  value={purchaseOrderReceiveDate}
+                  onChange={this.handleChange}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  fullWidth
+                  required
+                />
+                <br />
+                <FormControl>
+                  <input
+                    style={{ display: 'none' }}
+                    id="outlined-button-file-2"
+                    type="file"
+                    onClick={this.handleChangeFile2.bind(this)}
                   />
-                  <br />
-                  <FormControl>
-                    <input
-                      style={{ display: 'none' }}
-                      id="outlined-button-file-2"
-                      type="file"
-                      onClick={this.handleChangeFile2.bind(this)}
-                    />
-                    <FormLabel htmlFor="outlined-button-file-2">
-                      <div>
-                        <br />
-                        <br />
-                        <Button
-                          fullWidth
-                          variant="outlined"
-                          component="span"
-                          startIcon={<Image color="primary" />}
-                        >
+                  <FormLabel htmlFor="outlined-button-file-2">
+                    <div>
+                      <br />
+                      <br />
+                      <Button
+                        fullWidth
+                        variant="outlined"
+                        component="span"
+                        startIcon={<Image color="primary" />}
+                      >
                                 Documentation File
-                        </Button>
-                      </div>
-                    </FormLabel>
-                  </FormControl>
-                </div>
-              )}
+                      </Button>
+                    </div>
+                  </FormLabel>
+                </FormControl>
+              </div>
             </Grid>
             <Grid item xs={12} sm={7} md={3}>
               <FormControlLabel

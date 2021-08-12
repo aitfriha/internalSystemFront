@@ -702,7 +702,6 @@ class ExternalSuppliersBlock extends React.Component {
                   variant="outlined"
                   name="url"
                   value={url}
-                  required
                   fullWidth
                   onChange={this.handleChange}
                   className={classes.textField}
@@ -723,6 +722,7 @@ class ExternalSuppliersBlock extends React.Component {
                       {...params}
                       label="Choose the country"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -739,6 +739,7 @@ class ExternalSuppliersBlock extends React.Component {
                       {...params}
                       label="Choose the state"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -755,6 +756,7 @@ class ExternalSuppliersBlock extends React.Component {
                       {...params}
                       label="Choose the city"
                       variant="outlined"
+                      required
                     />
                   )}
                 />
@@ -778,7 +780,6 @@ class ExternalSuppliersBlock extends React.Component {
                   variant="outlined"
                   fullWidth
                   value={postCode}
-                  required
                   name="postCode"
                   className={classes.textField}
                   onChange={this.handleChange}

@@ -861,7 +861,6 @@ class EditContract extends React.Component {
                           value={contractDocDescreption[row]}
                           onChange={event => this.handleConcept(event, row)}
                           fullWidth
-                          required
                           InputLabelProps={{
                             shrink: true,
                           }}
@@ -980,6 +979,7 @@ class EditContract extends React.Component {
                     {...params}
                     label="Choose the country"
                     variant="outlined"
+                    required
                   />
                 )}
               />
@@ -998,6 +998,7 @@ class EditContract extends React.Component {
                     {...params}
                     label="Choose the state"
                     variant="outlined"
+                    required
                   />
                 )}
               />
@@ -1016,6 +1017,7 @@ class EditContract extends React.Component {
                     {...params}
                     label="Choose the city"
                     variant="outlined"
+                    required
                   />
                 )}
               />

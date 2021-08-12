@@ -526,6 +526,7 @@ class AddBilling extends React.Component {
                     name="descTotalUSD"
                     value={descTotalUSD[row]}
                     type="number"
+                    InputProps={{ inputProps: { min: 0 } }}
                     onChange={event => this.handleConcept(event, row)}
                     fullWidth
                     required

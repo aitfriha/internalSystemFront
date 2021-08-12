@@ -1592,7 +1592,6 @@ class PurchaseOrderBlock extends React.Component {
                       multiline
                       onChange={event => this.handleConcept(event, row)}
                       fullWidth
-                      required
                       InputLabelProps={{
                         shrink: true,
                       }}

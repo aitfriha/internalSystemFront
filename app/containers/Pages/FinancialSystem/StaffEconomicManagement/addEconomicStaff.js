@@ -263,6 +263,7 @@ class AddEconomicStaff extends React.Component {
                   value={fatherName}
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   InputProps={{
                     readOnly: true,
                   }}
@@ -276,6 +277,7 @@ class AddEconomicStaff extends React.Component {
                   value={motherName}
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   InputProps={{
                     readOnly: true,
                   }}
@@ -290,6 +292,7 @@ class AddEconomicStaff extends React.Component {
                   type="number"
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   InputProps={{
                     readOnly: true,
                   }}
@@ -303,6 +306,7 @@ class AddEconomicStaff extends React.Component {
                   value={company}
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   InputProps={{
                     readOnly: true,
                   }}
@@ -316,6 +320,7 @@ class AddEconomicStaff extends React.Component {
                   value={highDate}
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   InputProps={{
                     readOnly: true,
                   }}
@@ -353,6 +358,7 @@ class AddEconomicStaff extends React.Component {
                   <Select
                     name="currencyId"
                     value={currencyId}
+                    required
                     onChange={this.handleChange}
                   >
                     {
@@ -389,6 +395,7 @@ class AddEconomicStaff extends React.Component {
                   type="number"
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   disabled="true"
                 />
               </Grid>
@@ -401,6 +408,7 @@ class AddEconomicStaff extends React.Component {
                   type="number"
                   onChange={this.handleChange}
                   fullWidth
+                  required
                   disabled="true"
                 />
               </Grid>
