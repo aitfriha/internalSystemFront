@@ -13,6 +13,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import SuppliersTypeService from '../../../Services/SuppliersTypeService';
+import notification from '../../../../components/Notification/Notification';
+import IvaService from '../../../Services/IvaService';
 
 const useStyles = makeStyles();
 
@@ -191,7 +193,6 @@ class SuppliersTypeBlock extends React.Component {
 
   componentDidMount() {
     SuppliersTypeService.getSuppliersType().then(result => {
-      console.log(result);
       this.setState({ datas: result.data });
     });
     const {
@@ -221,11 +222,11 @@ class SuppliersTypeBlock extends React.Component {
     }
 
     handleDelete = (tableMeta) => {
+    return;
       const index = tableMeta.tableState.page * tableMeta.tableState.rowsPerPage
             + tableMeta.rowIndex;
       // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
       const id = this.state.datas[index].supplierTypeId;
-      console.log(id);
       // eslint-disable-next-line array-callback-return,react/destructuring-assignment
       SuppliersTypeService.deleteSuppliersType(id).then(result => {
         this.setState({ datas: result.data });
@@ -244,8 +245,14 @@ class SuppliersTypeBlock extends React.Component {
         supplierTypeId, name, description, operationAssociated, internalOrder
       };
       SuppliersTypeService.updateSuppliersType(SupplierType).then(result => {
-        this.setState({ datas: result.data, openPopUp: false });
-      });
+        if (result.status === 200) {
+          notification('success', 'Supplier type updated');
+          SuppliersTypeService.getSuppliersType().then(result2 => {
+            this.setState({ datas: result2.data, openPopUp: false });
+          });
+        }
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     };
 
     handleChange = (ev) => {

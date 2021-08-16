@@ -16,6 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import history from '../../../../utils/history';
 import SuppliersTypeService from '../../../Services/SuppliersTypeService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -46,9 +47,12 @@ class AddSuppliersType extends React.Component {
         name, description, operationAssociated, internalOrder
       };
       SuppliersTypeService.saveSuppliersType(SupplierType).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'Supplier type Added');
+        }
         history.push('/app/gestion-financial/Suppliers-Type');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleGoBack = () => {
@@ -72,7 +76,6 @@ class AddSuppliersType extends React.Component {
     }
 
     render() {
-      console.log(this.state);
       const title = brand.name + ' - Add New Supplier Type';
       const { desc } = brand;
       // eslint-disable-next-line react/prop-types

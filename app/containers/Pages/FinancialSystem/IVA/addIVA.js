@@ -16,12 +16,18 @@ import { bindActionCreators } from 'redux';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
 import Tooltip from '@material-ui/core/Tooltip';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import history from '../../../../utils/history';
 import IvaService from '../../../Services/IvaService';
 import { getAllCountry } from '../../../../redux/country/actions';
 import { getAllStateByCountry } from '../../../../redux/stateCountry/actions';
 import { getAllCityByState } from '../../../../redux/city/actions';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -32,8 +38,8 @@ class AddIVA extends React.Component {
       ivaCode: '',
       state: '',
       value: '',
-      startingDate: '',
-      endingDate: ' ',
+      startingDate: null,
+      endingDate: null,
       electronicInvoice: false
     };
   }
@@ -67,14 +73,19 @@ class AddIVA extends React.Component {
         ivaCode, value, state, startingDate, endingDate, electronicInvoice
       } = this.state;
       const stateCountry = { _id: state };
+      const stateCountryId = state;
       const Iva = {
-        ivaCode, value, startingDate, endingDate, electronicInvoice, stateCountry
+        ivaCode, value, startingDate, endingDate, electronicInvoice, stateCountry, stateCountryId
       };
       IvaService.saveIva(Iva).then(result => {
-        console.log(result);
-      });
-      history.push('/app/gestion-financial/IVA');
+        if (result.status === 200) {
+          notification('success', 'iva Added');
+        }
+        history.push('/app/gestion-financial/IVA');
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     }
+
 
     handleGoBack = () => {
       history.push('/app/gestion-financial/IVA');
@@ -83,6 +94,16 @@ class AddIVA extends React.Component {
     handleChange = (ev) => {
       this.setState({ [ev.target.name]: ev.target.value });
     };
+
+  handleChangeDate = (value, name) => {
+    this.setState({
+      [name]: value
+    });
+  };
+
+  handleChangeIVA = (ev) => {
+    this.setState({ [ev.target.name]: parseInt(ev.target.value, 10) });
+  };
 
     handleCheck = () => {
     // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
@@ -148,6 +169,7 @@ class AddIVA extends React.Component {
                   variant="outlined"
                   name="ivaCode"
                   value={ivaCode}
+                  inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}
@@ -197,10 +219,13 @@ class AddIVA extends React.Component {
                   label="I.V.A Value %"
                   variant="outlined"
                   name="value"
+                  step="5"
+                  type="number"
                   value={value}
+                  InputProps={{ inputProps: { min: 0 } }}
                   required
                   fullWidth
-                  onChange={this.handleChange}
+                  onChange={this.handleChangeIVA}
                   className={classes.textField}
                 />
               </Grid>
@@ -221,37 +246,44 @@ class AddIVA extends React.Component {
                 </Typography>
               </Grid>
               <Grid item xs={12} md={5}>
-                <TextField
-                  id="startingDate"
-                  label="Starting Date "
-                  type="date"
-                  variant="outlined"
-                  name="startingDate"
-                  value={startingDate}
-                  required
-                  fullWidth
-                  onChange={this.handleChange}
-                  className={classes.textField}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    inputProps={{ readOnly: true }}
+                    format="dd/MM/yyyy"
+                    margin="normal"
+                    inputVariant="outlined"
+                    id="date-picker-inline"
+                    name="startingDate"
+                    label="Starting Date"
+                    value={startingDate}
+                    onChange={value => this.handleChangeDate(value, 'startingDate')}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change date'
+                    }}
+                    fullWidth
+                    required
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
               <Grid item xs={12} md={5}>
-                <TextField
-                  id="endingDate"
-                  label="Ending Date "
-                  type="date"
-                  variant="outlined"
-                  name="endingDate"
-                  value={endingDate}
-                  fullWidth
-                  onChange={this.handleChange}
-                  className={classes.textField}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                    inputProps={{ readOnly: true }}
+                    format="dd/MM/yyyy"
+                    margin="normal"
+                    inputVariant="outlined"
+                    id="date-picker-inline"
+                    name="endingDate"
+                    label="Ending Date "
+                    value={endingDate}
+                    onChange={value => this.handleChangeDate(value, 'endingDate')}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change date'
+                    }}
+                    fullWidth
+                  />
+                </MuiPickersUtilsProvider>
+
               </Grid>
             </Grid>
             <div align="center">

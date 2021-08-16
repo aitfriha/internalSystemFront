@@ -25,6 +25,8 @@ import IvaService from '../../../Services/IvaService';
 import { getAllCountry } from '../../../../redux/country/actions';
 import { getAllStateByCountry } from '../../../../redux/stateCountry/actions';
 import { getAllCityByState } from '../../../../redux/city/actions';
+import notification from '../../../../components/Notification/Notification';
+import FinancialCompanyService from '../../../Services/FinancialCompanyService';
 
 const useStyles = makeStyles();
 
@@ -225,12 +227,20 @@ class IvaBlock extends React.Component {
         state, value, startingDate, endingDate, electronicInvoice, ivaCode, ivaId
       } = this.state;
       const stateCountry = { _id: state };
+      const stateCountryId = state;
       const Iva = {
-        ivaId, ivaCode, value, startingDate, endingDate, electronicInvoice, stateCountry
+        ivaId, ivaCode, value, startingDate, endingDate, electronicInvoice, stateCountry, stateCountryId
       };
       IvaService.updateIva(Iva).then(result => {
-        this.setState({ datas: result.data, openPopUp: false });
-      });
+        if (result.status === 200) {
+          notification('success', 'iva updated');
+          IvaService.getIva().then(result2 => {
+            this.setState({ datas: result2.data, openPopUp: false });
+          });
+        }
+      })
+        .catch(err => notification('danger', err.response.data.errors));
+      this.setState({ openPopUp: false });
     };
 
     handleDelete = (tableMeta) => {
@@ -339,6 +349,7 @@ class IvaBlock extends React.Component {
                       variant="outlined"
                       name="ivaCode"
                       value={ivaCode}
+                      inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 13 }}
                       required
                       fullWidth
                       onChange={this.handleChange}
@@ -389,7 +400,9 @@ class IvaBlock extends React.Component {
                       label="I.V.A Value %"
                       variant="outlined"
                       name="value"
+                      type="number"
                       value={value}
+                      InputProps={{ inputProps: { min: 0 } }}
                       required
                       fullWidth
                       onChange={this.handleChange}
