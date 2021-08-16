@@ -15,6 +15,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import history from '../../../../utils/history';
 import ContractStatusService from '../../../Services/ContractStatusService';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -22,7 +23,7 @@ class AddStatus extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      statusCode: 0,
+      statusCode: null,
       statusName: '',
       datas: [],
       description: ''
@@ -53,9 +54,13 @@ class AddStatus extends React.Component {
       });
       if (statusCode !== '10' || !exist) {
         ContractStatusService.saveContractStatus(ContractStatus).then(result => {
-          console.log(result);
+          // });
+          if (result.status === 200) {
+            notification('success', 'Contract status Added');
+          }
           history.push('/app/gestion-financial/Contract-Status');
-        });
+        })
+          .catch(err => notification('danger', err.response.data.errors));
       }
     }
 

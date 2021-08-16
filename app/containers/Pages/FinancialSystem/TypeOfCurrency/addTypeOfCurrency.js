@@ -48,18 +48,18 @@ class AddTypeOfCurrency extends React.Component {
         TypeOfCurrencylService.saveTypeOfCurrency(TypeOfCurrency).then(result => {
           if (result.status === 200) {
             notification('success', 'Type of currency Added');
-          } else {
-            notification('danger', 'Type of currency not Added');
+            history.push('/app/gestion-financial/Currency-Type');
           }
-          history.push('/app/gestion-financial/Currency-Type');
         })
-          .catch(err => notification('danger', err.response.data.errors.message));
+          .catch(err => notification('danger', err.response.data.errors));
+      } else {
+        notification('danger', 'code length can not be more then 3 ');
       }
-    }
+    };
 
     handleGoBack = () => {
       history.push('/app/gestion-financial/Currency-Type');
-    }
+    };
 
     handleChange = (ev) => {
       this.setState({ [ev.target.name]: ev.target.value });

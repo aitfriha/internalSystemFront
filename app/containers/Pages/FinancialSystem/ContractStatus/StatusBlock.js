@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import ContractStatusService from '../../../Services/ContractStatusService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
+import FinancialCompanyService from '../../../Services/FinancialCompanyService';
 
 const useStyles = makeStyles();
 
@@ -131,8 +133,15 @@ class StatusBlock extends React.Component {
     if (statusCode !== '10' || !exist) {
       if (statusName.toUpperCase() !== 'FINISHED') {
         ContractStatusService.updateContractStatus(ContractStatus).then(result => {
-          this.setState({ datas: result.data, openPopUp: false });
-        });
+          if (result.status === 200) {
+            notification('success', 'Contract status updated');
+            FinancialCompanyService.getContractStatus().then(result2 => {
+              this.setState({ datas: result2.data, openPopUp: false });
+            });
+          }
+        })
+          .catch(err => notification('danger', err.response.data.errors));
+        this.setState({ openPopUp: false });
       }
     }
   };
@@ -142,7 +151,6 @@ class StatusBlock extends React.Component {
   };
 
   render() {
-    console.log(this.state);
     const {
       columns, openPopUp, datas, statusCode, statusName, description
     } = this.state;

@@ -13,6 +13,7 @@ import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import CurrencyService from '../../../Services/CurrencyService';
 import notification from '../../../../components/Notification/Notification';
+import FinancialCompanyService from '../../../Services/FinancialCompanyService';
 
 const useStyles = makeStyles();
 
@@ -139,12 +140,14 @@ class TypeOfCurrencyBlock extends React.Component {
         TypeOfCurrencylService.updateTypeOfCurrency(Currency).then(result => {
           if (result.status === 200) {
             notification('success', 'Type of currency updated');
-            this.setState({ datas: result.data, openPopUp: false });
-          } else {
-            notification('danger', 'Type of currency not updated');
+            TypeOfCurrencylService.getTypeOfCurrency().then(result2 => {
+              this.setState({ datas: result2.data, openPopUp: false });
+            });
           }
         })
-          .catch(err => notification('danger', err.response.data.errors.message));
+          .catch(err => notification('danger', err.response.data.errors));
+      } else {
+        notification('danger', 'code length can not be more then 3 ');
       }
     };
 

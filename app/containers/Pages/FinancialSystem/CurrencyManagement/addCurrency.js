@@ -52,18 +52,17 @@ class AddCurrency extends React.Component {
         year, month, changeFactor, currencyName
       } = this.state;
       const typeOfCurrency = { _id: currencyName };
+      const currencyCode = currencyName;
       const Currency = {
-        year, month, changeFactor, typeOfCurrency
+        year, month, changeFactor, typeOfCurrency, currencyCode
       };
       CurrencyService.saveCurrency(Currency).then(result => {
         if (result.status === 200) {
           notification('success', 'Currency Added');
-        } else {
-          notification('danger', 'Currency not Added');
         }
         history.push('/app/gestion-financial/Currency-Management');
       })
-        .catch(err => notification('danger', err.response.data.errors.message));
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleGoBack = () => {

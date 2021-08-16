@@ -25,6 +25,7 @@ import { getAllCityByState } from '../../../../redux/city/actions';
 import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import styles from './companies-jss';
 import notification from '../../../../components/Notification/Notification';
+import history from "../../../../utils/history";
 
 const useStyles = makeStyles(styles);
 
@@ -476,19 +477,23 @@ class CompaniesBlock extends React.Component {
       financialCompanyId, name, code, taxNumber, email, phone1, phone2, logo, currentCity, postCode, fullAddress, addressId
     } = this.state;
     const city = { _id: currentCity };
+    const cityId = currentCity;
     const address = {
       addressId, postCode, city, fullAddress
     };
     const FinancialCompany = {
-      financialCompanyId, name, code, taxNumber, email, phone1, phone2, logo, address
+      financialCompanyId, name, code, taxNumber, email, phone1, phone2, logo, address, fullAddress, cityId
     };
     FinancialCompanyService.updateCompany(FinancialCompany).then(result => {
       if (result.status === 200) {
         notification('success', 'company updated');
+        FinancialCompanyService.getCompany().then(result2 => {
+          this.setState({ datas: result2.data, openPopUp: false });
+        });
       }
-      this.setState({ datas: result.data, openPopUp: false });
     })
-      .catch(err => notification('danger', err.response.data.errors.message));
+      .catch(err => notification('danger', err.response.data.errors));
+    this.setState({openPopUp: false });
   };
 
   handleClose = () => {

@@ -24,6 +24,7 @@ import CurrencyService from '../../../Services/CurrencyService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
 import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
 import notification from '../../../../components/Notification/Notification';
+import FinancialCompanyService from '../../../Services/FinancialCompanyService';
 
 const useStyles = makeStyles();
 
@@ -145,7 +146,6 @@ class CurrencyBlock extends React.Component {
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
       const id = this.state.datas[index].currencyId;
       CurrencyService.getCurrencyById(id).then(result => {
-        console.log(result.data);
         this.setState({
           currencyId: id,
           currencyName: result.data.typeOfCurrency._id,
@@ -177,18 +177,20 @@ class CurrencyBlock extends React.Component {
         currencyId, year, month, changeFactor, currencyName
       } = this.state;
       const typeOfCurrency = { _id: currencyName };
+      const currencyCode = currencyName;
       const Currency = {
-        currencyId, year, month, changeFactor, typeOfCurrency
+        currencyId, year, month, changeFactor, typeOfCurrency, currencyCode
       };
       CurrencyService.updateCurrency(Currency).then(result => {
         if (result.status === 200) {
-          notification('success', 'Currency Updated');
-        } else {
-          notification('danger', 'Currency not Added');
+          notification('success', 'currency updated');
+          CurrencyService.getCurrency().then(result2 => {
+            this.setState({ datas: result2.data, openPopUp: false });
+          });
         }
-        this.setState({ datas: result.data, AllDatas: result.data, openPopUp: false });
       })
-        .catch(err => notification('danger', err.response.data.errors.message));
+        .catch(err => notification('danger', err.response.data.errors));
+      this.setState({ openPopUp: false });
     };
 
     handleChange = (ev) => {

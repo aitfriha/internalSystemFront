@@ -78,7 +78,6 @@ class AddFinancialCompany extends React.Component {
   readURI(e) {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
-      console.log(e.target.files);
       reader.onload = function (ev) {
         this.setState({ logo: ev.target.result });
       }.bind(this);
@@ -95,11 +94,12 @@ class AddFinancialCompany extends React.Component {
         name, code, email, phone1, phone2, logo, postCode, currentCity, fullAddress, taxNumber
       } = this.state;
       const city = { _id: currentCity };
+      const cityId = currentCity;
       const address = {
         postCode, city, fullAddress
       };
       const FinancialCompany = {
-        name, code, taxNumber, email, phone1, phone2, logo, address
+        name, code, taxNumber, email, phone1, phone2, logo, address, fullAddress, cityId
       };
       FinancialCompanyService.saveCompany(FinancialCompany).then(result => {
         if (result.status === 200) {
@@ -109,7 +109,7 @@ class AddFinancialCompany extends React.Component {
         }
         history.push('/app/gestion-financial/Company');
       })
-        .catch(err => notification('danger', err.response.data.errors.message));
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleChange = (ev) => {
