@@ -22,6 +22,8 @@ import { getAllStateByCountry } from '../../../../redux/stateCountry/actions';
 import { getAllCityByState } from '../../../../redux/city/actions';
 import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import styles from '../Company/companies-jss';
+import notification from '../../../../components/Notification/Notification';
+import IvaService from '../../../Services/IvaService';
 
 const useStyles = makeStyles(styles);
 
@@ -511,16 +513,23 @@ class ExternalSuppliersBlock extends React.Component {
       externalSupplierId, code, companyName, firstName, fatherFamilyName, motherFamilyName, email, currentCity, postCode, fullAddress, taxNumber, url, addressId
     } = this.state;
     const city = { _id: currentCity };
+    const cityId = currentCity
     const address = {
       addressId, postCode, city, fullAddress
     };
     const ExternalSupplier = {
-      externalSupplierId, companyName, code, firstName, fatherFamilyName, motherFamilyName, url, taxNumber, email, address
+      externalSupplierId, companyName, code, firstName, fatherFamilyName, motherFamilyName, url, taxNumber, email, address, fullAddress, cityId
     };
     ExternalSuppliersService.updateExternalSuppliers(ExternalSupplier).then(result => {
-      this.setState({ datas: result.data, openPopUp: false });
-    });
-  };
+      if (result.status === 200) {
+        notification('success', 'External suppliers updated');
+        ExternalSuppliersService.getExternalSuppliers().then(result2 => {
+          this.setState({ datas: result2.data, openPopUp: false });
+        });
+      }
+    }).catch(err => notification('danger', err.response.data.errors));
+    this.setState({ openPopUp: false });
+  }
 
   handleClose = () => {
     this.setState({ openPopUp: false });
@@ -617,6 +626,7 @@ class ExternalSuppliersBlock extends React.Component {
                   variant="outlined"
                   name="code"
                   value={code}
+                  inputProps={{ maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}

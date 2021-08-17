@@ -169,7 +169,7 @@ class AddIVA extends React.Component {
                   variant="outlined"
                   name="ivaCode"
                   value={ivaCode}
-                  inputProps={{ pattern: '^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$', maxLength: 10 }}
+                  inputProps={{ maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}

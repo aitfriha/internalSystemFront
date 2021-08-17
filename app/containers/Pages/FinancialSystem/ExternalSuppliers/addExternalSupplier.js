@@ -21,6 +21,7 @@ import { ThemeContext } from '../../../App/ThemeWrapper';
 import { getAllCountry } from '../../../../redux/country/actions';
 import { getAllStateByCountry } from '../../../../redux/stateCountry/actions';
 import { getAllCityByState } from '../../../../redux/city/actions';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -74,16 +75,20 @@ class AddExternalSupplier extends React.Component {
         code, companyName, firstName, fatherFamilyName, motherFamilyName, email, currentCity, postCode, fullAddress, taxNumber, url
       } = this.state;
       const city = { _id: currentCity };
+      const cityId = currentCity
       const address = {
         postCode, city, fullAddress
       };
       const ExternalSupplier = {
-        companyName, code, firstName, fatherFamilyName, motherFamilyName, url, taxNumber, email, address
+        companyName, code, firstName, fatherFamilyName, motherFamilyName, url, taxNumber, email, address, cityId, fullAddress
       };
       ExternalSuppliersService.saveExternalSuppliers(ExternalSupplier).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'External suppliers Added');
+        }
         history.push('/app/gestion-financial/External-Suppliers');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleGoBack = () => {
@@ -147,6 +152,7 @@ class AddExternalSupplier extends React.Component {
                   variant="outlined"
                   name="code"
                   value={code}
+                  inputProps={{ maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}
@@ -220,6 +226,7 @@ class AddExternalSupplier extends React.Component {
                   variant="outlined"
                   name="taxNumber"
                   value={taxNumber}
+                  inputProps={{ maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}
