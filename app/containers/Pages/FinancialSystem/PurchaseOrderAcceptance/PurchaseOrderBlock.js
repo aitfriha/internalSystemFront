@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 import CustomToolbar from '../../../../components/CustomToolbar/CustomToolbar';
 import PurchaseOrderAcceptanceService from '../../../Services/PurchaseOrderAcceptanceService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
+import IvaService from '../../../Services/IvaService';
 
 const useStyles = makeStyles();
 
@@ -126,8 +128,17 @@ class PurchaseOrderBlock extends React.Component {
         purchaseOrderAcceptanceId, generatedPurchase, adminAcceptance, operationalAcceptance
       };
       PurchaseOrderAcceptanceService.updatePurchaseOrderAcceptance(PurchaseOrderAcceptance).then(result => {
-        this.setState({ datas: result.data, openPopUp: false });
-      });
+        console.log('result');
+        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'Purchase orderAcceptance updated');
+          PurchaseOrderAcceptanceService.getPurchaseOrderAcceptance().then(result2 => {
+            this.setState({ datas: result2.data, openPopUp: false });
+          });
+        }
+      })
+        .catch(err => notification('danger', err.response.data.errors));
+      this.setState({ openPopUp: false });
     };
 
     handleChange = (ev) => {

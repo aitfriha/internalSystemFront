@@ -700,6 +700,7 @@ class ExternalSuppliersBlock extends React.Component {
                   variant="outlined"
                   name="taxNumber"
                   value={taxNumber}
+                  inputProps={{ maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}

@@ -13,6 +13,7 @@ import history from '../../../../utils/history';
 import PurchaseOrderAcceptanceService from '../../../Services/PurchaseOrderAcceptanceService';
 
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -42,9 +43,12 @@ class AddPurchaseOrder extends React.Component {
         generatedPurchase, adminAcceptance, operationalAcceptance
       };
       PurchaseOrderAcceptanceService.savePurchaseOrderAcceptance(PurchaseOrderAcceptance).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'Purchase order acceptance Added');
+        }
         history.push('/app/gestion-financial/Purchase-Order');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleGoBack = () => {
@@ -56,10 +60,8 @@ class AddPurchaseOrder extends React.Component {
     };
 
     render() {
-      console.log(this.state);
       const title = brand.name + ' - Add New Purchase Order';
       const { desc } = brand;
-      // eslint-disable-next-line react/prop-types
       const {
         generatedPurchase, adminAcceptance, operationalAcceptance
       } = this.state;

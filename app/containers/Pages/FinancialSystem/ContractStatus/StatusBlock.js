@@ -135,7 +135,7 @@ class StatusBlock extends React.Component {
         ContractStatusService.updateContractStatus(ContractStatus).then(result => {
           if (result.status === 200) {
             notification('success', 'Contract status updated');
-            FinancialCompanyService.getContractStatus().then(result2 => {
+            ContractStatusService.getContractStatus().then(result2 => {
               this.setState({ datas: result2.data, openPopUp: false });
             });
           }
@@ -215,10 +215,10 @@ class StatusBlock extends React.Component {
                   <TextField
                     id="outlined-basic"
                     label="Status Code"
-                    type="number"
                     variant="outlined"
                     name="statusCode"
                     value={statusCode}
+                    inputProps={{ maxLength: 10 }}
                     required
                     fullWidth
                     onChange={this.handleChange}

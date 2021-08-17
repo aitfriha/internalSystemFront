@@ -118,10 +118,10 @@ class AddStatus extends React.Component {
                 <TextField
                   id="outlined-basic"
                   label="Status Code"
-                  type="number"
                   variant="outlined"
                   name="statusCode"
                   value={statusCode}
+                  inputProps={{ maxLength: 10 }}
                   required
                   fullWidth
                   onChange={this.handleChange}
