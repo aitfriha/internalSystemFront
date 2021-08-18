@@ -933,6 +933,7 @@ class SuppliersPaymentBlock extends React.Component {
                         type="number"
                         name="contractTradeVolume"
                         value={contractTradeVolume}
+                        InputProps={{ inputProps: { min: 0 } }}
                         onChange={this.handleChange}
                         fullWidth
                         required

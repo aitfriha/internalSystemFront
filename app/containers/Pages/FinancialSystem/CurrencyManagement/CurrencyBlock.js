@@ -403,6 +403,7 @@ class CurrencyBlock extends React.Component {
                       name="changeFactor"
                       type="number"
                       value={changeFactor}
+                      InputProps={{ inputProps: { min: 0 } }}
                       required
                       fullWidth
                       onChange={this.handleChange}

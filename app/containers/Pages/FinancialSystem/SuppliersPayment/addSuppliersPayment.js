@@ -55,11 +55,11 @@ class AddSuppliersPayment extends React.Component {
       externalSuppliers: [],
       externalSupplierId: '',
       financialCompanyId: '',
-      type: '',
-      typeClient: '',
+      type: 'external',
+      typeClient: 'contract',
       poClient: false,
-      contractClient: false,
-      haveExternal: false,
+      contractClient: true,
+      haveExternal: true,
       haveInternal: false
     };
   }
@@ -157,19 +157,20 @@ class AddSuppliersPayment extends React.Component {
     }
 
     handleChange = (ev) => {
-      let changeFactor;
+      const {
+        changeFactor, contractTradeVolume, currencies
+      } = this.state;
       if (ev.target.name === 'currencyId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tradeValue = this.state.contractTradeVolume;
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.currencies.map(currency => {
-          // eslint-disable-next-line prefer-destructuring
+        const tradeValue = contractTradeVolume;
+        currencies.map(currency => {
           if (currency.currencyId === ev.target.value) {
-            // eslint-disable-next-line prefer-destructuring
-            changeFactor = currency.changeFactor;
+            this.setState({ contractTradeVolumeEuro: tradeValue * currency.changeFactor, changeFactor: currency.changeFactor });
           }
+          return null;
         });
-        this.setState({ contractTradeVolumeEuro: tradeValue * changeFactor, changeFactor });
+      }
+      if (ev.target.name === 'contractTradeVolume') {
+        this.setState({ contractTradeVolumeEuro: ev.target.value * changeFactor, changeFactor });
       }
       if (ev.target.name === 'type') {
         if (ev.target.value === 'external') this.setState({ haveExternal: true, haveInternal: false });
@@ -202,10 +203,8 @@ class AddSuppliersPayment extends React.Component {
     };
 
     render() {
-      console.log(this.state);
       const title = brand.name + ' - Add New Supplier Payment';
       const { desc } = brand;
-      // eslint-disable-next-line react/prop-types
       const {
         codeSupplier, companies, externalSuppliers, type, supplierBill, reelPaymentDate, paymentDate,
         haveExternal, haveInternal, externalSupplierId, financialCompanyId,
@@ -474,6 +473,7 @@ class AddSuppliersPayment extends React.Component {
                       id="Contract Trade Volume"
                       label="Contract Trade Volume"
                       type="number"
+                      InputProps={{ inputProps: { min: 0 } }}
                       name="contractTradeVolume"
                       value={contractTradeVolume}
                       onChange={this.handleChange}

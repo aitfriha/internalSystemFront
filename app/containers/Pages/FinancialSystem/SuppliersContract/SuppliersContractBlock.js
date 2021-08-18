@@ -23,6 +23,8 @@ import CurrencyService from '../../../Services/CurrencyService';
 import ClientService from '../../../Services/ClientService';
 import ContractService from '../../../Services/ContractService';
 import PurchaseOrderService from '../../../Services/PurchaseOrderService';
+import notification from '../../../../components/Notification/Notification';
+import ContractStatusService from '../../../Services/ContractStatusService';
 
 const useStyles = makeStyles();
 
@@ -558,7 +560,6 @@ class SuppliersContractBlock extends React.Component {
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
       const id = this.state.datas[index].supplierContractId;
       SuppliersContractService.getSuppliersContractById(id).then(result => {
-        console.log(result);
         this.setState({
           supplierContractId: id,
           name: result.data.name,
@@ -605,7 +606,6 @@ class SuppliersContractBlock extends React.Component {
     readURI(e) {
       if (e.target.files && e.target.files[0]) {
         const reader = new FileReader();
-        console.log(e.target.files);
         reader.onload = function (ev) {
           this.setState({ document: ev.target.result });
         }.bind(this);
@@ -619,9 +619,24 @@ class SuppliersContractBlock extends React.Component {
 
     handleSave = () => {
       const {
-        supplierContractId, name, codeContract, codeSupplier, document, externalSupplierId, financialCompanyId, type, typeClient,
-        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor, clientId, purchaseOrderId, contractId
+        supplierContractId, name, codeContract, codeSupplier, document, type, typeClient,
+        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor, clientId, haveInternal, haveExternal
       } = this.state;
+      let {
+        externalSupplierId, financialCompanyId, purchaseOrderId, contractId
+      } = this.state;
+      if (haveInternal === true) {
+        externalSupplierId = 'empty';
+      }
+      if (haveExternal === true) {
+        financialCompanyId = 'empty';
+      }
+      if (typeClient === 'contract') {
+        purchaseOrderId = 'empty';
+      }
+      if (typeClient === 'po') {
+        contractId = 'empty';
+      }
       const currency = { _id: currencyId };
       const client = { _id: clientId };
       let financialCompany = { _id: '' };
@@ -633,43 +648,71 @@ class SuppliersContractBlock extends React.Component {
       if (typeClient === 'contract') financialContract = { _id: contractId };
       if (typeClient === 'po') purchaseOrder = { _id: purchaseOrderId };
       const SuppliersContract = {
-        supplierContractId, name, codeContract, codeSupplier, document, externalSupplier, financialCompany, type, typeClient, currency, contractTradeVolume, contractTradeVolumeEuro, changeFactor, client, purchaseOrder, financialContract
+        supplierContractId,
+        name,
+        codeContract,
+        codeSupplier,
+        document,
+        externalSupplier,
+        financialCompany,
+        type,
+        typeClient,
+        currency,
+        contractTradeVolume,
+        contractTradeVolumeEuro,
+        changeFactor,
+        client,
+        purchaseOrder,
+        financialContract,
+        clientId,
+        currencyId,
+        financialCompanyId,
+        externalSupplierId,
+        purchaseOrderId,
+        contractId
       };
-      console.log(SuppliersContract);
       SuppliersContractService.updateSuppliersContract(SuppliersContract).then(result => {
-        this.setState({ datas: result.data, openPopUp: false });
-      });
+        if (result.status === 200) {
+          notification('success', 'supplier contract updated');
+          SuppliersContractService.getSuppliersContract().then(result2 => {
+            this.setState({ datas: result2.data, openPopUp: false });
+          });
+        }
+      })
+        .catch(err => notification('danger', err.response.data.errors));
+      this.setState({ openPopUp: false });
     };
 
     handleChange = (ev) => {
-      let changeFactor;
+      const {
+        contractTradeVolume, currencies, changeFactor, externalSuppliers, companies, purchaseOrders, contracts
+      } = this.state;
       if (ev.target.name === 'currencyId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tradeValue = this.state.contractTradeVolume;
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.currencies.map(currency => {
-          // eslint-disable-next-line prefer-destructuring
+        const tradeValue = contractTradeVolume;
+        currencies.map(currency => {
           if (currency.currencyId === ev.target.value) {
-            // eslint-disable-next-line prefer-destructuring
-            changeFactor = currency.changeFactor;
+            this.setState({ contractTradeVolumeEuro: tradeValue * currency.changeFactor, changeFactor: currency.changeFactor });
           }
+          return null;
         });
-        this.setState({ contractTradeVolumeEuro: tradeValue * changeFactor, changeFactor });
+      }
+      if (ev.target.name === 'contractTradeVolume') {
+        this.setState({ contractTradeVolumeEuro: ev.target.value * changeFactor, changeFactor });
       }
       if (ev.target.name === 'type') {
         if (ev.target.value === 'external') this.setState({ haveExternal: true, haveInternal: false, financialCompanyId: '' });
         else this.setState({ haveInternal: true, haveExternal: false, externalSupplierId: '' });
       }
       if (ev.target.name === 'externalSupplierId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.externalSuppliers.map(row => {
+        externalSuppliers.map(row => {
           if (row.externalSupplierId === ev.target.value) this.setState({ codeSupplier: row.code, financialCompanyId: '' });
+          return null;
         });
       }
       if (ev.target.name === 'financialCompanyId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.companies.map(row => {
+        companies.map(row => {
           if (row.financialCompanyId === ev.target.value) this.setState({ codeSupplier: row.code, externalSupplierId: '' });
+          return null;
         });
       }
       if (ev.target.name === 'typeClient') {
@@ -677,8 +720,7 @@ class SuppliersContractBlock extends React.Component {
         else this.setState({ poClient: true, contractClient: false });
       }
       if (ev.target.name === 'clientId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab1 = this.state.purchaseOrders; const tab2 = this.state.contracts;
+        const tab1 = purchaseOrders; const tab2 = contracts;
         const tabClient = tab2.filter((row) => (row.client._id === ev.target.value));
         const tabPurchaseOrder = tab1.filter((row) => (row.client._id === ev.target.value));
         this.setState({ purchaseOrdersClient: tabPurchaseOrder, contractsClient: tabClient });
@@ -776,6 +818,7 @@ class SuppliersContractBlock extends React.Component {
                         type="number"
                         name="contractTradeVolume"
                         value={contractTradeVolume}
+                        InputProps={{ inputProps: { min: 0 } }}
                         onChange={this.handleChange}
                         fullWidth
                         required

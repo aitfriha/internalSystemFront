@@ -6,7 +6,6 @@ import {
 } from '@material-ui/core';
 import brand from 'dan-api/dummy/brand';
 import { PapperBlock } from 'dan-components';
-import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
@@ -27,9 +26,7 @@ import CurrencyService from '../../../Services/CurrencyService';
 import ClientService from '../../../Services/ClientService';
 import ContractService from '../../../Services/ContractService';
 import PurchaseOrderService from '../../../Services/PurchaseOrderService';
-
-const useStyles = makeStyles();
-
+import notification from '../../../../components/Notification/Notification';
 class AddSuppliersContract extends React.Component {
   constructor(props) {
     super(props);
@@ -37,7 +34,7 @@ class AddSuppliersContract extends React.Component {
       name: '',
       codeContract: '',
       codeSupplier: '',
-      changeFactor: 1,
+      changeFactor: 0,
       currencies: [],
       clients: [],
       clientId: '',
@@ -56,11 +53,11 @@ class AddSuppliersContract extends React.Component {
       externalSuppliers: [],
       externalSupplierId: '',
       financialCompanyId: '',
-      type: '',
-      typeClient: '',
+      type: 'external',
+      typeClient: 'contract',
       poClient: false,
-      contractClient: false,
-      haveExternal: false,
+      contractClient: true,
+      haveExternal: true,
       haveInternal: false
     };
   }
@@ -72,11 +69,9 @@ class AddSuppliersContract extends React.Component {
     } = this.props;
     changeTheme('greyTheme');
     FinancialCompanyService.getCompany().then(result => {
-      console.log(result);
       this.setState({ companies: result.data });
     });
     ExternalSuppliersService.getExternalSuppliers().then(result => {
-      console.log(result);
       this.setState({ externalSuppliers: result.data });
     });
     CurrencyService.getFilteredCurrency().then(result => {
@@ -88,10 +83,8 @@ class AddSuppliersContract extends React.Component {
     ContractService.getContract().then(result => {
       // eslint-disable-next-line array-callback-return
       this.setState({ contracts: result.data, contractsClient: result.data });
-      console.log(this.state);
     });
     PurchaseOrderService.getPurchaseOrder().then(result => {
-      console.log(result);
       this.setState({ purchaseOrders: result.data, purchaseOrdersClient: result.data });
     });
   }
@@ -101,7 +94,6 @@ class AddSuppliersContract extends React.Component {
   readURI(e) {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
-      console.log(e.target.files);
       reader.onload = function (ev) {
         this.setState({ document: ev.target.result });
       }.bind(this);
@@ -115,9 +107,25 @@ class AddSuppliersContract extends React.Component {
 
     handleSubmit = () => {
       const {
-        name, codeContract, codeSupplier, document, externalSupplierId, financialCompanyId, type, typeClient,
-        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor, clientId, purchaseOrderId, contractId
+        name, codeContract, codeSupplier, document, type, typeClient,
+        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor, clientId, haveInternal, haveExternal
       } = this.state;
+      let {
+        externalSupplierId, financialCompanyId, purchaseOrderId, contractId
+      } = this.state;
+      if (haveInternal === true) {
+        externalSupplierId = 'empty';
+      }
+      if (haveExternal === true) {
+        financialCompanyId = 'empty';
+      }
+      if (typeClient === 'contract') {
+        purchaseOrderId = 'empty';
+      }
+      if (typeClient === 'po') {
+        contractId = 'empty';
+      }
+
       const currency = { _id: currencyId };
       const client = { _id: clientId };
       let financialCompany = { _id: '' };
@@ -129,13 +137,35 @@ class AddSuppliersContract extends React.Component {
       if (typeClient === 'contract') financialContract = { _id: contractId };
       if (typeClient === 'po') purchaseOrder = { _id: purchaseOrderId };
       const SuppliersContract = {
-        name, codeContract, codeSupplier, document, externalSupplier, financialCompany, type, typeClient, contractTradeVolume, contractTradeVolumeEuro, changeFactor, client, currency, purchaseOrder, financialContract
+        name,
+        codeContract,
+        codeSupplier,
+        document,
+        externalSupplier,
+        financialCompany,
+        type,
+        typeClient,
+        contractTradeVolume,
+        contractTradeVolumeEuro,
+        changeFactor,
+        client,
+        currency,
+        purchaseOrder,
+        financialContract,
+        clientId,
+        currencyId,
+        financialCompanyId,
+        externalSupplierId,
+        purchaseOrderId,
+        contractId
       };
-      console.log(SuppliersContract);
       SuppliersContractService.saveSuppliersContract(SuppliersContract).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'Supplier contract status Added');
+        }
         history.push('/app/gestion-financial/Suppliers Contract');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleGoBack = () => {
@@ -143,34 +173,36 @@ class AddSuppliersContract extends React.Component {
     }
 
     handleChange = (ev) => {
-      let changeFactor;
+      const {
+        contractTradeVolume, currencies, changeFactor, externalSuppliers, companies, purchaseOrders, contracts
+      } = this.state;
+      const tradeValue = contractTradeVolume;
+      this.setState({ [ev.target.name]: ev.target.value });
       if (ev.target.name === 'currencyId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tradeValue = this.state.contractTradeVolume;
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.currencies.map(currency => {
-          // eslint-disable-next-line prefer-destructuring
+        currencies.map(currency => {
           if (currency.currencyId === ev.target.value) {
-            // eslint-disable-next-line prefer-destructuring
-            changeFactor = currency.changeFactor;
+            this.setState({ contractTradeVolumeEuro: tradeValue * currency.changeFactor, changeFactor: currency.changeFactor });
           }
+          return null;
         });
-        this.setState({ contractTradeVolumeEuro: tradeValue * changeFactor, changeFactor });
+      }
+      if (ev.target.name === 'contractTradeVolume') {
+        this.setState({ contractTradeVolumeEuro: ev.target.value * changeFactor, changeFactor });
       }
       if (ev.target.name === 'type') {
         if (ev.target.value === 'external') this.setState({ haveExternal: true, haveInternal: false });
         else this.setState({ haveInternal: true, haveExternal: false });
       }
       if (ev.target.name === 'externalSupplierId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.externalSuppliers.map(row => {
+        externalSuppliers.map(row => {
           if (row.externalSupplierId === ev.target.value) this.setState({ codeSupplier: row.code, codeContract: row.code, financialCompanyId: '' });
+          return null;
         });
       }
       if (ev.target.name === 'financialCompanyId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.companies.map(row => {
+        companies.map(row => {
           if (row.financialCompanyId === ev.target.value) this.setState({ codeSupplier: row.code, codeContract: row.code, externalSupplierId: '' });
+          return null;
         });
       }
       if (ev.target.name === 'typeClient') {
@@ -178,20 +210,16 @@ class AddSuppliersContract extends React.Component {
         else this.setState({ poClient: true, contractClient: false });
       }
       if (ev.target.name === 'clientId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab1 = this.state.purchaseOrders; const tab2 = this.state.contracts;
-        const tabClient = tab2.filter((row) => (row.client._id === ev.target.value));
-        const tabPurchaseOrder = tab1.filter((row) => (row.client._id === ev.target.value));
+        const tab1 = purchaseOrders; const tab2 = contracts;
+        const tabClient = tab2.filter((row) => (row.client.clientId === ev.target.value));
+        const tabPurchaseOrder = tab1.filter((row) => (row.client.clientId === ev.target.value));
         this.setState({ purchaseOrdersClient: tabPurchaseOrder, contractsClient: tabClient });
       }
-      this.setState({ [ev.target.name]: ev.target.value });
     };
 
     render() {
-      console.log(this.state);
       const title = brand.name + ' - Add New Supplier Contract';
       const { desc } = brand;
-      // eslint-disable-next-line react/prop-types
       const {
         name, codeSupplier, companies, externalSuppliers, type, document,
         currencyId, contractTradeVolume, contractTradeVolumeEuro, currencies,
@@ -259,6 +287,7 @@ class AddSuppliersContract extends React.Component {
                       type="number"
                       name="contractTradeVolume"
                       value={contractTradeVolume}
+                      InputProps={{ inputProps: { min: 0 } }}
                       onChange={this.handleChange}
                       fullWidth
                       required
@@ -562,6 +591,5 @@ const AddSuppliersContractMapped = connect(
 
 export default () => {
   const { changeTheme } = useContext(ThemeContext);
-  const classes = useStyles();
-  return <AddSuppliersContractMapped changeTheme={changeTheme} classes={classes} />;
+  return <AddSuppliersContractMapped changeTheme={changeTheme} />;
 };

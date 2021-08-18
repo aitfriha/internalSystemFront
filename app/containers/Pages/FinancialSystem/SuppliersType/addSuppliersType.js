@@ -120,7 +120,7 @@ class AddSuppliersType extends React.Component {
               <Grid item xs={10} md={6}>
                 <TextField
                   id="outlined-name"
-                  label="Supplier Name"
+                  label="Supplier type name"
                   variant="outlined"
                   name="name"
                   value={name}

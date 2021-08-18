@@ -54,7 +54,6 @@ class AddStatus extends React.Component {
       });
       if (statusCode !== '10' || !exist) {
         ContractStatusService.saveContractStatus(ContractStatus).then(result => {
-          // });
           if (result.status === 200) {
             notification('success', 'Contract status Added');
           }
