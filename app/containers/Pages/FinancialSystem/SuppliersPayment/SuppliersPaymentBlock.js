@@ -23,6 +23,8 @@ import ClientService from '../../../Services/ClientService';
 import ContractService from '../../../Services/ContractService';
 import PurchaseOrderService from '../../../Services/PurchaseOrderService';
 import CurrencyService from '../../../Services/CurrencyService';
+import notification from '../../../../components/Notification/Notification';
+import TypeOfCurrencylService from '../../../Services/TypeOfCurrencylService';
 
 const useStyles = makeStyles();
 
@@ -32,6 +34,7 @@ class SuppliersPaymentBlock extends React.Component {
     // eslint-disable-next-line react/destructuring-assignment,react/prop-types
     const thelogedUser = JSON.parse(this.props.logedUser);
     this.state = {
+      externalSupplierId: '',
       codeContract: '',
       codeSupplier: '',
       clients: [],
@@ -52,7 +55,6 @@ class SuppliersPaymentBlock extends React.Component {
       ReelPaymentDate: '',
       companies: [],
       externalSuppliers: [],
-      externalSupplierId: '',
       financialCompanyId: '',
       type: '',
       typeClient: '',
@@ -513,7 +515,7 @@ class SuppliersPaymentBlock extends React.Component {
           typeClient: result.data.typeClient,
           clientId: result.data.client._id,
           contractId: (result.data.typeClient === 'contract' && result.data.financialContract !== null) ? result.data.financialContract._id : '',
-          purchaseOrderId: (result.data.typeClient === 'po' && result.data.purchaseOrder !== null ) ? result.data.purchaseOrder._id : '',
+          purchaseOrderId: (result.data.typeClient === 'po' && result.data.purchaseOrder !== null) ? result.data.purchaseOrder._id : '',
           haveExternal: result.data.type === 'external',
           haveInternal: result.data.type === 'internal',
           poClient: result.data.typeClient === 'po',
@@ -543,7 +545,6 @@ class SuppliersPaymentBlock extends React.Component {
     readURI(e) {
       if (e.target.files && e.target.files[0]) {
         const reader = new FileReader();
-        console.log(e.target.files);
         reader.onload = function (ev) {
           this.setState({ supplierBill: ev.target.result });
         }.bind(this);
@@ -557,10 +558,25 @@ class SuppliersPaymentBlock extends React.Component {
 
     handleSave = () => {
       const {
-        supplierPaymentId, codeSupplier, supplierBill, externalSupplierId, financialCompanyId, type, typeClient,
-        clientId, purchaseOrderId, contractId, reelPaymentDate, paymentDate,
-        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor
+        supplierPaymentId, codeSupplier, supplierBill, type, typeClient,
+        clientId, reelPaymentDate, paymentDate,
+        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor, haveExternal, haveInternal
       } = this.state;
+      let {
+        externalSupplierId, financialCompanyId, purchaseOrderId, contractId
+      } = this.state;
+      if (haveInternal === true) {
+        externalSupplierId = 'empty';
+      }
+      if (haveExternal === true) {
+        financialCompanyId = 'empty';
+      }
+      if (typeClient === 'contract') {
+        purchaseOrderId = 'empty';
+      }
+      if (typeClient === 'po') {
+        contractId = 'empty';
+      }
       const client = { _id: clientId };
       const currency = { _id: currencyId };
       let financialCompany = { _id: '' };
@@ -571,7 +587,7 @@ class SuppliersPaymentBlock extends React.Component {
       if (externalSupplierId !== '') externalSupplier = { _id: externalSupplierId };
       if (typeClient === 'contract') financialContract = { _id: contractId };
       if (typeClient === 'po') purchaseOrder = { _id: purchaseOrderId };
-      const SuppliersContract = {
+      const SuppliersPayment = {
         supplierPaymentId,
         codeSupplier,
         currency,
@@ -587,43 +603,60 @@ class SuppliersPaymentBlock extends React.Component {
         purchaseOrder,
         financialContract,
         reelPaymentDate,
-        paymentDate
+        paymentDate,
+        clientId,
+        currencyId,
+        financialCompanyId,
+        externalSupplierId,
+        purchaseOrderId,
+        contractId
       };
-      console.log(SuppliersContract);
-      SuppliersPaymentService.updateSuppliersPayment(SuppliersContract).then(result => {
-        this.setState({ datas: result.data, openPopUp: false });
-      });
+      SuppliersPaymentService.updateSuppliersPayment(SuppliersPayment).then(result => {
+        if (result.status === 200) {
+          notification('success', 'Suppliers payment currency updated');
+          SuppliersPaymentService.getSuppliersPayment().then(result2 => {
+            this.setState({ datas: result2.data, openPopUp: false });
+          });
+        }
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     };
 
     handleChange = (ev) => {
-      let changeFactor;
+      const {
+        changeFactor, contractTradeVolume, currencies, externalSuppliers, companies, purchaseOrders, contracts
+      } = this.state;
+
       if (ev.target.name === 'currencyId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tradeValue = this.state.contractTradeVolume;
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.currencies.map(currency => {
-          // eslint-disable-next-line prefer-destructuring
+        const tradeValue = contractTradeVolume;
+        currencies.map(currency => {
           if (currency.currencyId === ev.target.value) {
-            // eslint-disable-next-line prefer-destructuring
-            changeFactor = currency.changeFactor;
+            this.setState({ contractTradeVolumeEuro: tradeValue * changeFactor, changeFactor });
           }
+          return null;
         });
-        this.setState({ contractTradeVolumeEuro: tradeValue * changeFactor, changeFactor });
+      }
+      if (ev.target.name === 'contractTradeVolume') {
+        this.setState({ contractTradeVolumeEuro: ev.target.value * changeFactor, changeFactor });
       }
       if (ev.target.name === 'type') {
         if (ev.target.value === 'external') this.setState({ haveExternal: true, haveInternal: false });
         else this.setState({ haveInternal: true, haveExternal: false });
       }
       if (ev.target.name === 'externalSupplierId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.externalSuppliers.map(row => {
-          if (row.externalSupplierId === ev.target.value) this.setState({ codeSupplier: row.code, financialCompanyId: '' });
+        externalSuppliers.map(row => {
+          if (row.externalSupplierId === ev.target.value) {
+            this.setState({ codeSupplier: row.code, financialCompanyId: '' });
+          }
+          return null;
         });
       }
       if (ev.target.name === 'financialCompanyId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.companies.map(row => {
-          if (row.financialCompanyId === ev.target.value) this.setState({ codeSupplier: row.code, codeContract: row.code, externalSupplierId: '' });
+        companies.map(row => {
+          if (row.financialCompanyId === ev.target.value) {
+            this.setState({ codeSupplier: row.code, codeContract: row.code, externalSupplierId: '' });
+          }
+          return null;
         });
       }
       if (ev.target.name === 'typeClient') {
@@ -631,8 +664,7 @@ class SuppliersPaymentBlock extends React.Component {
         else this.setState({ poClient: true, contractClient: false });
       }
       if (ev.target.name === 'clientId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab1 = this.state.purchaseOrders; const tab2 = this.state.contracts;
+        const tab1 = purchaseOrders; const tab2 = contracts;
         const tabClient = tab2.filter((row) => (row.client._id === ev.target.value));
         const tabPurchaseOrder = tab1.filter((row) => (row.client._id === ev.target.value));
         this.setState({ purchaseOrdersClient: tabPurchaseOrder, contractsClient: tabClient });

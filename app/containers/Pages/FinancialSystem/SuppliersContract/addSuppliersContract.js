@@ -211,8 +211,8 @@ class AddSuppliersContract extends React.Component {
       }
       if (ev.target.name === 'clientId') {
         const tab1 = purchaseOrders; const tab2 = contracts;
-        const tabClient = tab2.filter((row) => (row.client.clientId === ev.target.value));
-        const tabPurchaseOrder = tab1.filter((row) => (row.client.clientId === ev.target.value));
+        const tabClient = tab2.filter((row) => (row.client._id === ev.target.value));
+        const tabPurchaseOrder = tab1.filter((row) => (row.client._id === ev.target.value));
         this.setState({ purchaseOrdersClient: tabPurchaseOrder, contractsClient: tabClient });
       }
     };

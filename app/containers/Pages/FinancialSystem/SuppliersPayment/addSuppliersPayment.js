@@ -27,6 +27,7 @@ import ClientService from '../../../Services/ClientService';
 import ContractService from '../../../Services/ContractService';
 import PurchaseOrderService from '../../../Services/PurchaseOrderService';
 import CurrencyService from '../../../Services/CurrencyService';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -34,6 +35,7 @@ class AddSuppliersPayment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      codeContract: '',
       codeSupplier: '',
       clients: [],
       clientId: '',
@@ -71,23 +73,18 @@ class AddSuppliersPayment extends React.Component {
     } = this.props;
     changeTheme('greyTheme');
     FinancialCompanyService.getCompany().then(result => {
-      console.log(result);
       this.setState({ companies: result.data });
     });
     ExternalSuppliersService.getExternalSuppliers().then(result => {
-      console.log(result);
       this.setState({ externalSuppliers: result.data });
     });
     ClientService.getClients().then(result => {
       this.setState({ clients: result.data.payload });
     });
     ContractService.getContract().then(result => {
-      // eslint-disable-next-line array-callback-return
       this.setState({ contracts: result.data, contractsClient: result.data });
-      console.log(this.state);
     });
     PurchaseOrderService.getPurchaseOrder().then(result => {
-      console.log(result);
       this.setState({ purchaseOrders: result.data, purchaseOrdersClient: result.data });
     });
     CurrencyService.getFilteredCurrency().then(result => {
@@ -114,9 +111,13 @@ class AddSuppliersPayment extends React.Component {
 
     handleSubmit = () => {
       const {
-        codeSupplier, supplierBill, externalSupplierId, financialCompanyId, type, typeClient,
-        clientId, purchaseOrderId, contractId, reelPaymentDate, paymentDate,
-        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor
+        codeSupplier, supplierBill, type, typeClient,
+        clientId, reelPaymentDate, paymentDate,
+        currencyId, contractTradeVolume, contractTradeVolumeEuro, changeFactor, haveExternal,
+        haveInternal,
+      } = this.state;
+      let {
+        externalSupplierId, financialCompanyId, purchaseOrderId, contractId
       } = this.state;
       const client = { _id: clientId };
       const currency = { _id: currencyId };
@@ -128,6 +129,18 @@ class AddSuppliersPayment extends React.Component {
       if (externalSupplierId !== '') externalSupplier = { _id: externalSupplierId };
       if (typeClient === 'contract') financialContract = { _id: contractId };
       if (typeClient === 'po') purchaseOrder = { _id: purchaseOrderId };
+      if (haveInternal === true) {
+        externalSupplierId = 'empty';
+      }
+      if (haveExternal === true) {
+        financialCompanyId = 'empty';
+      }
+      if (typeClient === 'contract') {
+        purchaseOrderId = 'empty';
+      }
+      if (typeClient === 'po') {
+        contractId = 'empty';
+      }
       const SupplierPayment = {
         codeSupplier,
         supplierBill,
@@ -143,13 +156,21 @@ class AddSuppliersPayment extends React.Component {
         reelPaymentDate,
         client,
         purchaseOrder,
-        financialContract
+        financialContract,
+        clientId,
+        currencyId,
+        financialCompanyId,
+        externalSupplierId,
+        purchaseOrderId,
+        contractId
       };
-      console.log(SupplierPayment);
       SuppliersPaymentService.saveSuppliersPayment(SupplierPayment).then(result => {
-        console.log(result);
+        if (result.status === 200) {
+          notification('success', 'Suppliers payment status Added');
+        }
         history.push('/app/gestion-financial/Suppliers Payment');
-      });
+      })
+        .catch(err => notification('danger', err.response.data.errors));
     }
 
     handleGoBack = () => {
@@ -158,7 +179,7 @@ class AddSuppliersPayment extends React.Component {
 
     handleChange = (ev) => {
       const {
-        changeFactor, contractTradeVolume, currencies
+        changeFactor, contractTradeVolume, currencies, externalSuppliers, companies, purchaseOrders
       } = this.state;
       if (ev.target.name === 'currencyId') {
         const tradeValue = contractTradeVolume;
@@ -177,15 +198,19 @@ class AddSuppliersPayment extends React.Component {
         else this.setState({ haveInternal: true, haveExternal: false });
       }
       if (ev.target.name === 'externalSupplierId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.externalSuppliers.map(row => {
-          if (row.externalSupplierId === ev.target.value) this.setState({ codeSupplier: row.code, financialCompanyId: '' });
+        externalSuppliers.map(row => {
+          if (row.externalSupplierId === ev.target.value) {
+            this.setState({ codeSupplier: row.code, financialCompanyId: '' });
+          }
+          return null;
         });
       }
       if (ev.target.name === 'financialCompanyId') {
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.companies.map(row => {
-          if (row.financialCompanyId === ev.target.value) this.setState({ codeSupplier: row.code, codeContract: row.code, externalSupplierId: '' });
+        companies.map(row => {
+          if (row.financialCompanyId === ev.target.value) {
+            this.setState({ codeSupplier: row.code, codeContract: row.code, externalSupplierId: '' });
+          }
+          return null;
         });
       }
       if (ev.target.name === 'typeClient') {
@@ -193,8 +218,7 @@ class AddSuppliersPayment extends React.Component {
         else this.setState({ poClient: true, contractClient: false });
       }
       if (ev.target.name === 'clientId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab1 = this.state.purchaseOrders; const tab2 = this.state.contracts;
+        const tab1 = purchaseOrders; const tab2 = this.state.contracts;
         const tabClient = tab2.filter((row) => (row.client._id === ev.target.value));
         const tabPurchaseOrder = tab1.filter((row) => (row.client._id === ev.target.value));
         this.setState({ purchaseOrdersClient: tabPurchaseOrder, contractsClient: tabClient });

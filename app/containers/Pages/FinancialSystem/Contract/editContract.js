@@ -35,6 +35,7 @@ import { getAllCityByState } from '../../../../redux/city/actions';
 import { addClientCommercial, getAllClient } from '../../../../redux/client/actions';
 import styles from '../../Companies/companies-jss';
 import ContractService from '../../../Services/ContractService';
+import notification from '../../../../components/Notification/Notification';
 
 class EditContract extends React.Component {
   constructor(props) {
@@ -570,6 +571,8 @@ class EditContract extends React.Component {
           // eslint-disable-next-line react/prop-types,react/destructuring-assignment
           this.props.callbackFromParent(false);
         });
+      } else {
+        notification('danger', 'Trade Volume must be equal to Concept Total Amount in currency');
       }
     }
 

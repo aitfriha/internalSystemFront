@@ -41,6 +41,7 @@ import { getAllCityByState } from '../../../../redux/city/actions';
 import { addClientCommercial, getAllClient } from '../../../../redux/client/actions';
 import ContractService from '../../../Services/ContractService';
 import { ThemeContext } from '../../../App/ThemeWrapper';
+import notification from '../../../../components/Notification/Notification';
 
 const useStyles = makeStyles();
 
@@ -479,9 +480,10 @@ class AddContract extends React.Component {
       };
       if (parseFloat(contractTradeVolume) === conceptTotalAmount) {
         ContractService.saveContract(FinancialContract).then(result => {
-          console.log(result);
           history.push('/app/gestion-financial/Contracts');
         });
+      } else {
+        notification('danger', 'Trade Volume must be equal to Concept Total Amount in currency');
       }
     }
 
@@ -760,7 +762,7 @@ class AddContract extends React.Component {
               {openDoc === false ? (
                 <div />
               ) : (
-                <FormControl fullWidth >
+                <FormControl fullWidth>
                   <br />
                   <input
                     style={{ display: 'none' }}
@@ -1382,14 +1384,14 @@ class AddContract extends React.Component {
               )}
             </Grid>
             <Grid item xs={12} sm={7} md={3}>
-{/*              <FormControlLabel
+              {/*              <FormControlLabel
                 id="purchaseOrder"
                 name="purchaseOrder"
                 value={purchaseOrder}
                 control={<Checkbox color="primary" onChange={this.handleCheck2} />}
                 label="Purchase Order"
                 labelPlacement="start"
-              />*/}
+              /> */}
               <br />
               <Typography variant="subtitle2" component="h2" color="primary">
                 Purchase Order *
