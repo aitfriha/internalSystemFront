@@ -68,13 +68,13 @@ class SuppliersPaymentBlock extends React.Component {
       columns: [
         {
           label: 'Client',
-          name: 'client',
+          name: 'client.name',
           options: {
             filter: true,
-            customBodyRender: (client) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  client ? client.name : '---'
+                  name || '---'
                 }
               </React.Fragment>
             ),
@@ -100,13 +100,13 @@ class SuppliersPaymentBlock extends React.Component {
         },
         {
           label: 'Contract Client',
-          name: 'financialContract',
+          name: 'financialContract.contractTitle',
           options: {
             filter: true,
-            customBodyRender: (financialContract) => (
+            customBodyRender: (contractTitle) => (
               <React.Fragment>
                 {
-                  financialContract ? financialContract.contractTitle : '---'
+                  contractTitle || '---'
                 }
               </React.Fragment>
             ),
@@ -132,13 +132,13 @@ class SuppliersPaymentBlock extends React.Component {
         },
         {
           label: 'Purchase Order Client',
-          name: 'purchaseOrder',
+          name: 'purchaseOrder.purchaseNumber',
           options: {
             filter: true,
-            customBodyRender: (purchaseOrder) => (
+            customBodyRender: (purchaseNumber) => (
               <React.Fragment>
                 {
-                  purchaseOrder ? purchaseOrder.purchaseNumber : '---'
+                  purchaseNumber || '---'
                 }
               </React.Fragment>
             ),
@@ -189,13 +189,13 @@ class SuppliersPaymentBlock extends React.Component {
         },
         {
           label: 'Supplier Name',
-          name: 'externalSupplier',
+          name: 'externalSupplier.companyName',
           options: {
             filter: true,
-            customBodyRender: (externalSupplier) => (
+            customBodyRender: (companyName) => (
               <React.Fragment>
                 {
-                  externalSupplier ? externalSupplier.companyName : '---'
+                  companyName || '---'
                 }
               </React.Fragment>
             ),
@@ -221,13 +221,13 @@ class SuppliersPaymentBlock extends React.Component {
         },
         {
           label: 'Supplier Code',
-          name: 'externalSupplier',
+          name: 'externalSupplier.code',
           options: {
             filter: true,
-            customBodyRender: (externalSupplier) => (
+            customBodyRender: (code) => (
               <React.Fragment>
                 {
-                  externalSupplier ? externalSupplier.code : '---'
+                  code || '---'
                 }
               </React.Fragment>
             ),
@@ -253,13 +253,13 @@ class SuppliersPaymentBlock extends React.Component {
         },
         {
           label: 'Company Name',
-          name: 'financialCompany',
+          name: 'financialCompany.name',
           options: {
             filter: true,
-            customBodyRender: (financialCompany) => (
+            customBodyRender: (name) => (
               <React.Fragment>
                 {
-                  financialCompany ? financialCompany.name : '---'
+                  name || '---'
                 }
               </React.Fragment>
             ),
@@ -285,13 +285,13 @@ class SuppliersPaymentBlock extends React.Component {
         },
         {
           label: 'Company Code',
-          name: 'financialCompany',
+          name: 'financialCompany.code',
           options: {
             filter: true,
-            customBodyRender: (financialCompany) => (
+            customBodyRender: (code) => (
               <React.Fragment>
                 {
-                  financialCompany ? financialCompany.code : '---'
+                  code || '---'
                 }
               </React.Fragment>
             ),
@@ -458,7 +458,6 @@ class SuppliersPaymentBlock extends React.Component {
 
   componentDidMount() {
     SuppliersPaymentService.getSuppliersPayment().then(result => {
-      console.log(result);
       this.setState({ datas: result.data });
     });
     FinancialCompanyService.getCompany().then(result => {

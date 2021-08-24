@@ -41,6 +41,8 @@ import PrintPurchaseOrder2 from './printPurchaseOrder2';
 import ClientService from '../../../Services/ClientService';
 import ContractService from '../../../Services/ContractService';
 import PrintButton from './PrintButton';
+import notification from '../../../../components/Notification/Notification';
+import SuppliersPaymentService from '../../../Services/SuppliersPaymentService';
 
 const useStyles = makeStyles(styles);
 
@@ -754,7 +756,6 @@ class PurchaseOrderBlock extends React.Component {
       this.setState({ currencies: result.data });
     });
     IvaService.getIvaCountries().then(result => {
-      console.log(result.data);
       this.setState({ ivasCountries: result.data });
     });
     ClientService.getClients().then(result => {
@@ -763,7 +764,6 @@ class PurchaseOrderBlock extends React.Component {
     ContractService.getContract().then(result => {
       // eslint-disable-next-line array-callback-return
       this.setState({ contracts: result.data, contractsClient: result.data });
-      console.log(this.state);
     });
     // eslint-disable-next-line no-shadow,react/prop-types
     const { changeTheme } = this.props;
@@ -836,8 +836,8 @@ class PurchaseOrderBlock extends React.Component {
         typeClient: purchaseOrder.typeClient,
         clientId: purchaseOrder.client._id,
         contractId: purchaseOrder.typeClient === 'contract' ? purchaseOrder.financialContract._id : '',
-        haveExternal: purchaseOrder.type === 'external',
-        haveInternal: purchaseOrder.type === 'internal',
+        /*        haveExternal: purchaseOrder.type === 'external',
+        haveInternal: purchaseOrder.type === 'internal', */
         poClient: purchaseOrder.typeClient === 'po',
         contractClient: purchaseOrder.typeClient === 'contract',
         openPopUp: true
@@ -919,13 +919,28 @@ class PurchaseOrderBlock extends React.Component {
       totalAmountRetentions,
       totalIvaRetention,
       paymentMethod,
+      clientId,
+      companyEmitId: companyDataEmit,
+      currencyId: localCurrency,
+      receptionSupplierData: receptionSupplierExternal,
+      contractId
     };
     PurchaseOrderService.updatePurchaseOrder(PurchaseOrder).then(result => {
-      this.setState({ datas: result.data, openPopUp: false });
-    });
+      if (result.status === 200) {
+        notification('success', 'purchase order updated');
+        PurchaseOrderService.getPurchaseOrder().then(result2 => {
+          this.setState({ datas: result2.data });
+        });
+      }
+    })
+      .catch(err => notification('danger', err.response.data.errors));
+    this.setState({ openPopUp: false });
   };
 
     handleChange = (ev) => {
+      const {
+        totalLocal, currencies, ivaStates, ivaState
+      } = this.state;
       if (ev.target.name === 'companyDataEmit') {
         // eslint-disable-next-line array-callback-return,react/destructuring-assignment
         this.state.companies.map(row => {
@@ -967,14 +982,14 @@ class PurchaseOrderBlock extends React.Component {
       if (ev.target.name === 'ivaState') {
         const id = ev.target.value;
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const local = this.state.totalLocal; const { factor } = this.state;
+        const { factor } = this.state;
         let iva = 0;
         // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.ivaStates.map(row => {
+        ivaStates.map(row => {
           if (row.ivaId === id) iva = row.value;
         });
         this.setState({
-          ivaState: id, valueIVALocal: (iva * local) / 100, valueIVAEuro: ((iva * local) / 100) * factor, totalAmountLocal: local + ((iva * local) / 100), totalAmountEuro: (local + ((iva * local) / 100)) * factor
+          ivaState: id, valueIVALocal: (iva * totalLocal) / 100, valueIVAEuro: ((iva * totalLocal) / 100) * factor, totalAmountLocal: totalLocal + ((iva * totalLocal) / 100), totalAmountEuro: (totalLocal + ((iva * totalLocal) / 100)) * factor
         });
       }
       if (ev.target.name === 'localCurrency') {
@@ -1010,6 +1025,9 @@ class PurchaseOrderBlock extends React.Component {
 
     handleConcept = (event, row) => {
       let total = 0;
+      const {
+        unityNumber, unityValue, valor, factor, ivaStates, ivaState
+      } = this.state;
       if (event.target.name === 'description') {
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
         const tab = this.state.description;
@@ -1032,14 +1050,25 @@ class PurchaseOrderBlock extends React.Component {
         this.setState({ unity: tab });
       }
       if (event.target.name === 'unityNumber') {
+        const val = valor;
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab = this.state.unityNumber; const value = this.state.unityValue; const val = this.state.valor;
+        const tab = this.state.unityNumber;
+        const value = this.state.unityValue;
         tab[0] = 0;
         tab[row] = event.target.value;
         val[row] = event.target.value * value[row];
         // eslint-disable-next-line array-callback-return,no-shadow
         val.map(row => { total += Number(row); });
         this.setState({ unityNumber: tab, valor: val, totalLocal: Number(total) });
+        this.setState({ totalEuro: factor * total, factor });
+        let iva = 0;
+        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
+        ivaStates.map(row => {
+          if (row.ivaId === ivaState) iva = row.value;
+        });
+        this.setState({
+          valueIVALocal: (iva * total) / 100, valueIVAEuro: ((iva * total) / 100) * factor, totalAmountLocal: total + ((iva * total) / 100), totalAmountEuro: (total + ((iva * total) / 100)) * factor
+        });
       }
       if (event.target.name === 'givingDate') {
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
@@ -1065,9 +1094,25 @@ class PurchaseOrderBlock extends React.Component {
       if (event.target.name === 'unityValue') {
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
         const tab = this.state.unityValue;
+        const val = valor;
+        console.log(valor);
         tab[0] = 0;
         tab[row] = event.target.value;
         this.setState({ unityValue: tab });
+        val[row] = event.target.value * unityNumber[row];
+        val.map(a => {
+          total += Number(a);
+        });
+        this.setState({ valor: val, totalLocal: total });
+        this.setState({ totalEuro: factor * total, factor });
+        let iva = 0;
+        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
+        ivaStates.map(row => {
+          if (row.ivaId === ivaState) iva = row.value;
+        });
+        this.setState({
+          valueIVALocal: (iva * total) / 100, valueIVAEuro: ((iva * total) / 100) * factor, totalAmountLocal: total + ((iva * total) / 100), totalAmountEuro: (total + ((iva * total) / 100)) * factor
+        });
       }
     }
 
@@ -1166,7 +1211,6 @@ class PurchaseOrderBlock extends React.Component {
     };
 
     render() {
-      console.log(this.state);
       const { classes } = this.props;
       const {
         datas, columns, openPopUp,
@@ -1605,6 +1649,7 @@ class PurchaseOrderBlock extends React.Component {
                       value={unityValue[row]}
                       type="number"
                       onChange={event => this.handleConcept(event, row)}
+                      InputProps={{ inputProps: { min: 0 } }}
                       fullWidth
                       required
                       InputLabelProps={{
@@ -1631,8 +1676,10 @@ class PurchaseOrderBlock extends React.Component {
                       id="unityNumber"
                       label="N° of Unity"
                       name="unityNumber"
+                      type="number"
                       value={unityNumber[row]}
                       onChange={event => this.handleConcept(event, row)}
+                      InputProps={{ inputProps: { min: 0 } }}
                       fullWidth
                       required
                       InputLabelProps={{
@@ -2000,7 +2047,6 @@ class PurchaseOrderBlock extends React.Component {
                           onChange={event => this.handleTerms(event, row)}
                           fullWidth
                           multiline
-                          required
                           InputLabelProps={{
                             shrink: true,
                           }}

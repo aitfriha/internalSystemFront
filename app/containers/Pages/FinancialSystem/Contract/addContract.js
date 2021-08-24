@@ -1174,7 +1174,7 @@ class AddContract extends React.Component {
               <Grid item xs={1}>
                 <TextField
                   id="conceptCurrency"
-                  label="Currency"
+                  label="Currency code"
                   name="conceptCurrency"
                   value={currencyCode}
                   onChange={this.handleChange}
