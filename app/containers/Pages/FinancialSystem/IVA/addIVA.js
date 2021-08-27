@@ -265,7 +265,7 @@ class AddIVA extends React.Component {
                   />
                 </MuiPickersUtilsProvider>
               </Grid>
-              <Grid item xs={12} md={5}>
+              {/*   <Grid item xs={12} md={5}>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <KeyboardDatePicker
                     inputProps={{ readOnly: true }}
@@ -284,7 +284,7 @@ class AddIVA extends React.Component {
                   />
                 </MuiPickersUtilsProvider>
 
-              </Grid>
+              </Grid> */}
             </Grid>
             <div align="center">
               <br />

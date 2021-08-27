@@ -15,5 +15,8 @@ class FunctionalStructureService {
   getLevelTree = levelId => axios.get(`${ENDPOINTS.FUNCTIONALSTRUCTURE}/level-tree/${levelId}`);
 
   setLevelStaffs = objects => axios.post(`${ENDPOINTS.FUNCTIONALSTRUCTURE}/level-assign`, objects);
+
+  getLevelChild = levelId => axios.get(`${ENDPOINTS.FUNCTIONALSTRUCTURE}/level-child/${levelId}`);
+
 }
 export default new FunctionalStructureService();

@@ -49,6 +49,10 @@ class AddContract extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      DesableLevel2: true,
+      DesableLevel3: true,
+      maxValue: [],
+      errorEquality: false,
       contractTitle: '',
       client: '',
       clients: [],
@@ -64,7 +68,10 @@ class AddContract extends React.Component {
       level1: '',
       level2: '',
       level3: '',
+      functionalStructureLevelId: '',
       levels: [],
+      levelChild2: [],
+      levelChild3: [],
       signedDate: '',
       startDate: '',
       endDate: '',
@@ -73,6 +80,7 @@ class AddContract extends React.Component {
       contractTradeVolumeEuro: 0,
       currencies: [],
       currencyId: '',
+      currency: {},
       currencyCode: '',
       changeFactor: 0,
       paymentsBDDays: '',
@@ -142,7 +150,7 @@ class AddContract extends React.Component {
     ClientService.getClients().then(result => {
       this.setState({ clients: result.data.payload });
     });
-    FunctionalStructureService.getLevels().then(result => {
+    FunctionalStructureService.getLevelByType('Level 1').then(result => {
       this.setState({ levels: result.data.payload });
     });
   }
@@ -163,31 +171,127 @@ class AddContract extends React.Component {
     this.setState({ currentCity: value.cityId });
   };
 
+  handleChangeLevel1 = (ev) => {
+    FunctionalStructureService.getLevelChild(ev.target.value).then(result => {
+      this.setState({ [ev.target.name]: ev.target.value, functionalStructureLevelId: ev.target.value });
+      if (result.status === 200) {
+        if ((result.data).length > 0) {
+          this.setState({ levelChild2: result.data, levelChild3: [], DesableLevel2: false, });
+        } else {
+          this.setState({
+            levelChild2: [], levelChild3: [], DesableLevel2: true, DesableLevel3: true
+          });
+        }
+      }
+    })
+      .catch(err => notification('danger', err.response.data.errors));
+  }
+
+  handleChangeLevel2 = (ev) => {
+    this.setState({
+      functionalStructureLevelId: ev.target.value
+    });
+    FunctionalStructureService.getLevelChild(ev.target.value).then(result => {
+      if (result.status === 200) {
+        if ((result.data).length > 0) {
+          this.setState({ levelChild3: result.data,DesableLevel3: false });
+        } else {
+          this.setState({
+            levelChild3: [], DesableLevel3: true
+          });
+        }
+      }
+    })
+      .catch(err => notification('danger', err.response.data.errors));
+    this.setState({ [ev.target.name]: ev.target.value });
+  }
+
+  handleChangeLevel3 = (ev) => {
+    this.setState({ [ev.target.name]: ev.target.value });
+    this.setState({
+      functionalStructureLevelId: ev.target.value
+    });
+  }
+
     handleChange = (ev) => {
-      let changeFactor;
+      const {
+        currencies, contractTradeVolume, operations, changeFactor, currency, conceptType, conceptValueEuro, conceptValueLocal, conceptValue
+      } = this.state;
       if (ev.target.name === 'client') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const commercialOperations = this.state.operations.filter(row => row.client._id === ev.target.value);
+        const commercialOperations = operations.filter(row => row.client._id === ev.target.value);
         this.setState({ commercialOperations });
       }
       if (ev.target.name === 'currencyId') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tradeValue = this.state.contractTradeVolume;
-        let currencyCode;
-        // eslint-disable-next-line react/destructuring-assignment,array-callback-return
-        this.state.currencies.map(currency => {
-          // eslint-disable-next-line prefer-destructuring
-          if (currency.currencyId === ev.target.value) {
-            // eslint-disable-next-line prefer-destructuring
-            changeFactor = currency.changeFactor; currencyCode = currency.typeOfCurrency.currencyCode;
+        let totalEuro = 0;
+        let total = 0;
+        currencies.map(currencyo => {
+          if (currencyo.currencyId === ev.target.value) {
+            this.setState({
+              contractTradeVolumeEuro: contractTradeVolume * currencyo.changeFactor, changeFactor: currencyo.changeFactor, currencyCode: currencyo.typeOfCurrency.currencyCode, currency: currencyo
+            });
+            for (let i = 0; i < conceptType.length; i++) {
+              if (conceptType[i] === 1) {
+                conceptValueEuro[i] = ((contractTradeVolume * conceptValue[i]) / 100) * currencyo.changeFactor;
+                conceptValueLocal[i] = (contractTradeVolume * conceptValue[i]) / 100;
+              }
+              if (conceptType[i] === 2) {
+                conceptValueEuro[i] = conceptValue[i] * currencyo.changeFactor;
+                conceptValueLocal[i] = conceptValue[i] * 1;
+              }
+            }
           }
+          return null;
         });
-        this.setState({ contractTradeVolumeEuro: tradeValue * changeFactor, changeFactor, currencyCode });
+        // eslint-disable-next-line array-callback-return,no-shadow
+        conceptValueEuro.map(row => { totalEuro += row; });
+        // eslint-disable-next-line array-callback-return,no-shadow
+        conceptValueLocal.map(row => { total += row; });
+        this.setState({
+          conceptValueEuro, conceptTotalAmountEuro: totalEuro, conceptTotalAmount: total
+        });
+        if (Number(contractTradeVolume) === total) {
+          this.setState({
+            errorEquality: false
+          });
+        } else {
+          this.setState({
+            errorEquality: true
+          });
+        }
+      }
+      if (ev.target.name === 'contractTradeVolume') {
+        let totalEuro = 0;
+        let total = 0;
+        this.setState({ contractTradeVolumeEuro: ev.target.value * currency.changeFactor });
+        for (let i = 0; i < conceptType.length; i++) {
+          if (conceptType[i] === 1) {
+            conceptValueEuro[i] = ((ev.target.value * conceptValue[i]) / 100) * changeFactor;
+            conceptValueLocal[i] = (ev.target.value * conceptValue[i]) / 100;
+          }
+          if (conceptType[i] === 2) {
+            conceptValueEuro[i] = conceptValue[i] * changeFactor;
+            conceptValueLocal[i] = conceptValue[i] * 1;
+          }
+        }
+        // eslint-disable-next-line array-callback-return,no-shadow
+        conceptValueEuro.map(row => { totalEuro += row; });
+        // eslint-disable-next-line array-callback-return,no-shadow
+        conceptValueLocal.map(row => { total += row; });
+        this.setState({
+          conceptValue, conceptValueLocal, conceptValueEuro, conceptTotalAmountEuro: totalEuro, conceptTotalAmount: total
+        });
+        if (Number(ev.target.value) === total) {
+          this.setState({
+            errorEquality: false
+          });
+        } else {
+          this.setState({
+            errorEquality: true
+          });
+        }
       }
       if (ev.target.name === 'amountInsured') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const factor = this.state.changeFactor;
-        this.setState({ amountInsuredEuro: ev.target.value * factor });
+        this.setState({ amountInsuredEuro: ev.target.value * changeFactor });
       }
       this.setState({ [ev.target.name]: ev.target.value });
     };
@@ -195,33 +299,75 @@ class AddContract extends React.Component {
     handleConcept = (event, row) => {
       let totalEuro = 0;
       let total = 0;
+      const {
+        conceptType, conceptValue, conceptValueEuro, conceptValueLocal, contractTradeVolume, changeFactor, maxValue
+      } = this.state;
       if (event.target.name === 'conceptType') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab = this.state.conceptType;
-        tab[0] = 0;
-        tab[row] = event.target.value;
-        this.setState({ conceptType: tab });
+        conceptType[0] = 0;
+        conceptType[row] = event.target.value;
+        this.setState({ conceptType });
+        if (event.target.value === 1) {
+          conceptValueEuro[row] = ((contractTradeVolume * conceptValue[row]) / 100) * changeFactor;
+          conceptValueLocal[row] = (contractTradeVolume * conceptValue[row]) / 100;
+          maxValue[row] = 100;
+          this.setState({ maxValue });
+        }
+        if (event.target.value === 2) {
+          conceptValueEuro[row] = conceptValue[row] * changeFactor;
+          conceptValueLocal[row] = conceptValue[row] * 1;
+          maxValue[row] = contractTradeVolume;
+          this.setState({ maxValue });
+        }
+        // eslint-disable-next-line array-callback-return,no-shadow
+        conceptValueEuro.map(row => { totalEuro += row; });
+        // eslint-disable-next-line array-callback-return,no-shadow
+        conceptValueLocal.map(row => { total += row; });
+        this.setState({
+          conceptValue, conceptValueLocal, conceptValueEuro, conceptTotalAmountEuro: totalEuro, conceptTotalAmount: total
+        });
+        if (Number(contractTradeVolume) === total) {
+          this.setState({
+            errorEquality: false
+          });
+        } else {
+          this.setState({
+            errorEquality: true
+          });
+        }
       }
       if (event.target.name === 'conceptValue') {
-        // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
-        const tab = this.state.conceptValue; const type = this.state.conceptType[row]; const tab2 = this.state.conceptValueEuro; const tab3 = this.state.conceptValueLocal; const amount = this.state.contractTradeVolume; const factor = this.state.changeFactor;
-        tab[0] = 0; tab2[0] = 0; tab3[0] = 0;
-        tab[row] = event.target.value;
-        if (type === 1) {
-          tab2[row] = ((amount * event.target.value) / 100) * factor;
-          tab3[row] = (amount * event.target.value) / 100;
+        conceptValue[0] = 0;
+        conceptValueEuro[0] = 0;
+        conceptValueLocal[0] = 0;
+        conceptValue[row] = event.target.value;
+        if (conceptType[row] === 1) {
+          conceptValueEuro[row] = ((contractTradeVolume * event.target.value) / 100) * changeFactor;
+          conceptValueLocal[row] = (contractTradeVolume * event.target.value) / 100;
+          maxValue[row] = 100;
+          this.setState({ maxValue });
         }
-        if (type === 2) {
-          tab2[row] = event.target.value * factor;
-          tab3[row] = event.target.value * 1;
+        if (conceptType[row] === 2) {
+          conceptValueEuro[row] = event.target.value * changeFactor;
+          conceptValueLocal[row] = event.target.value * 1;
+          maxValue[row] = contractTradeVolume;
+          this.setState({ maxValue });
         }
         // eslint-disable-next-line array-callback-return,no-shadow
-        tab2.map(row => { totalEuro += row; });
+        conceptValueEuro.map(row => { totalEuro += row; });
         // eslint-disable-next-line array-callback-return,no-shadow
-        tab3.map(row => { total += row; });
+        conceptValueLocal.map(row => { total += row; });
         this.setState({
-          conceptValue: tab, conceptValueLocal: tab3, conceptValueEuro: tab2, conceptTotalAmountEuro: totalEuro, conceptTotalAmount: total
+          conceptValue, conceptValueLocal, conceptValueEuro, conceptTotalAmountEuro: totalEuro, conceptTotalAmount: total
         });
+        if (Number(contractTradeVolume) === total) {
+          this.setState({
+            errorEquality: false
+          });
+        } else {
+          this.setState({
+            errorEquality: true
+          });
+        }
       }
       if (event.target.name === 'purchaseOrderNumber') {
         // eslint-disable-next-line react/destructuring-assignment,react/no-access-state-in-setstate
@@ -418,19 +564,19 @@ class AddContract extends React.Component {
         signedDate, startDate, endDate, finalReelDate, contractTradeVolume, contractTradeVolumeEuro,
         penaltyMaxType, currencyId, paymentsBDDays, penaltyQuantity, penaltyValue, currentCity,
         penaltyCost, penaltyPer, penaltyMaxValue, purchaseOrderNumber, purchaseOrderReceiveDate,
-        firstDayInsured, lastDayInsured, amountInsured, amountInsuredEuro, level3,
-        penaltiesListe, purchaseOrders, insureDocumentations, contractDocumentations, nbrConcepts
+        firstDayInsured, lastDayInsured, amountInsured, amountInsuredEuro,
+        penaltiesListe, purchaseOrders, insureDocumentations, contractDocumentations, nbrConcepts, functionalStructureLevelId
       } = this.state;
       // eslint-disable-next-line react/destructuring-assignment
-      const id = this.state.client;
-      const client = { _id: id };
+      const clientId = this.state.client;
+      const client = { _id: clientId };
       const commercialOperation = { _id: operation };
       const financialCompany = { _id: company };
       const contractStatus = { _id: state };
       const city = { _id: currentCity };
       const address = { city };
       const currency = { _id: currencyId };
-      const functionalStructureLevel = { _id: level3 };
+      const functionalStructureLevel = { _id: functionalStructureLevelId };
       const FinancialContract = {
         client,
         commercialOperation,
@@ -476,12 +622,22 @@ class AddContract extends React.Component {
         purchaseOrders,
         insureDocumentations,
         contractDocumentations,
-        nbrConcepts
+        nbrConcepts,
+        companyId: company,
+        clientId,
+        commercialOperationId: operation,
+        contractStatusId: state,
+        cityId: currentCity,
+        functionalStructureLevelId
       };
       if (parseFloat(contractTradeVolume) === conceptTotalAmount) {
         ContractService.saveContract(FinancialContract).then(result => {
+          if (result.status === 200) {
+            notification('success', 'contract Added');
+          }
           history.push('/app/gestion-financial/Contracts');
-        });
+        })
+          .catch(err => notification('danger', err.response.data.errors));
       } else {
         notification('danger', 'Trade Volume must be equal to Concept Total Amount in currency');
       }
@@ -639,7 +795,8 @@ class AddContract extends React.Component {
       signedDate, startDate, endDate, finalReelDate, contractTradeVolume, companies, commercialOperations, clients, contractTradeVolumeEuro,
       penaltyMaxType, currencyId, currencyCode, paymentsBDDays, penalties, penaltyQuantity, penaltyValue, levels, amountInsuredEuro,
       penaltyCost, penaltyPer, penaltyMaxValue, penaltiesListe, purchaseOrderNumber, purchaseOrderReceiveDate, purchaseOrders,
-      insure, firstDayInsured, lastDayInsured, amountInsured, proposal, open, open3, open4, level1, level2, level3, openDoc, contractDocDescreption
+      insure, firstDayInsured, lastDayInsured, amountInsured, proposal, open, open3, open4, level1, level2, level3, openDoc, contractDocDescreption, errorEquality, maxValue, levelChild2,
+      levelChild3, DesableLevel2, DesableLevel3
     } = this.state;
     const title = brand.name + ' - Blank Page';
     const description = brand.desc;
@@ -834,7 +991,7 @@ class AddContract extends React.Component {
                     <Select
                       name="level1"
                       value={level1}
-                      onChange={this.handleChange}
+                      onChange={this.handleChangeLevel1}
                     >
                       {
                         levels.map((clt) => (
@@ -852,11 +1009,12 @@ class AddContract extends React.Component {
                     <Select
                       name="level2"
                       value={level2}
-                      onChange={this.handleChange}
+                      onChange={this.handleChangeLevel2}
+                      disabled={DesableLevel2}
                     >
                       {
-                        levels.map((clt) => (
-                          <MenuItem key={clt.levelId} value={clt.levelId}>
+                        levelChild2.map((clt) => (
+                          <MenuItem key={clt._id} value={clt._id}>
                             {clt.name}
                           </MenuItem>
                         ))
@@ -870,11 +1028,12 @@ class AddContract extends React.Component {
                     <Select
                       name="level3"
                       value={level3}
-                      onChange={this.handleChange}
+                      onChange={this.handleChangeLevel3}
+                      disabled={DesableLevel3}
                     >
                       {
-                        levels.map((clt) => (
-                          <MenuItem key={clt.levelId} value={clt.levelId}>
+                        levelChild3.map((clt) => (
+                          <MenuItem key={clt._id} value={clt._id}>
                             {clt.name}
                           </MenuItem>
                         ))
@@ -1050,6 +1209,7 @@ class AddContract extends React.Component {
                 name="contractTradeVolume"
                 value={contractTradeVolume}
                 onChange={this.handleChange}
+                InputProps={{ inputProps: { min: 0 } }}
                 fullWidth
                 required
               />
@@ -1083,7 +1243,7 @@ class AddContract extends React.Component {
                 fullWidth
                 required
                 InputProps={{
-                  readOnly: true,
+                  readOnly: true, inputProps: { min: 0 }
                 }}
               />
             </Grid>
@@ -1095,6 +1255,7 @@ class AddContract extends React.Component {
                 name="paymentsBDDays"
                 value={paymentsBDDays}
                 onChange={this.handleChange}
+                InputProps={{ inputProps: { min: 0 } }}
                 fullWidth
                 required
               />
@@ -1146,6 +1307,7 @@ class AddContract extends React.Component {
                   name="conceptValue"
                   value={conceptValue[row]}
                   onChange={event => this.handleConcept(event, row)}
+                  InputProps={{ inputProps: { min: 0, max: maxValue[row] } }}
                   fullWidth
                   required
                 />
@@ -1163,7 +1325,7 @@ class AddContract extends React.Component {
                     onChange={this.handleChange}
                     fullWidth
                     InputProps={{
-                      readOnly: true,
+                      readOnly: true, inputProps: { min: 0 }
                     }}
                     InputLabelProps={{
                       shrink: true,
@@ -1197,7 +1359,7 @@ class AddContract extends React.Component {
                   onChange={this.handleChange}
                   fullWidth
                   InputProps={{
-                    readOnly: true,
+                    readOnly: true, inputProps: { min: 0 }
                   }}
                   InputLabelProps={{
                     shrink: true,
@@ -1231,6 +1393,7 @@ class AddContract extends React.Component {
                 type="number"
                 onChange={this.handleChange}
                 fullWidth
+                error={errorEquality}
                 InputProps={{
                   readOnly: true,
                 }}
@@ -1246,7 +1409,7 @@ class AddContract extends React.Component {
                 onChange={this.handleChange}
                 fullWidth
                 InputProps={{
-                  readOnly: true,
+                  readOnly: true, inputProps: { min: 0 }
                 }}
               />
             </Grid>
@@ -1311,6 +1474,7 @@ class AddContract extends React.Component {
                         name="amountInsured"
                         value={amountInsured}
                         onChange={this.handleChange}
+                        InputProps={{ inputProps: { min: 0 } }}
                         fullWidth
                         required
                       />
@@ -1318,13 +1482,13 @@ class AddContract extends React.Component {
                     <Grid item xs={5}>
                       <TextField
                         id="conceptCurrency"
-                        label="Currency"
+                        label="Currency code"
                         name="conceptCurrency"
                         value={currencyCode}
                         onChange={this.handleChange}
                         fullWidth
                         InputProps={{
-                          readOnly: true,
+                          readOnly: true, inputProps: { min: 0 }
                         }}
                       />
                     </Grid>
@@ -1339,7 +1503,7 @@ class AddContract extends React.Component {
                     fullWidth
                     required
                     InputProps={{
-                      readOnly: true,
+                      readOnly: true, inputProps: { min: 0 }
                     }}
                   />
                   <br />
@@ -1410,6 +1574,9 @@ class AddContract extends React.Component {
                         onChange={event => this.handleConcept(event, row)}
                         InputLabelProps={{
                           shrink: true,
+                        }}
+                        InputProps={{
+                          inputProps: { min: 0 }
                         }}
                         fullWidth
                         required
@@ -1607,6 +1774,9 @@ class AddContract extends React.Component {
                             InputLabelProps={{
                               shrink: true,
                             }}
+                            InputProps={{
+                              inputProps: { min: 0 }
+                            }}
                             fullWidth
                             required
                           />
@@ -1674,6 +1844,9 @@ class AddContract extends React.Component {
                       name="penaltyMaxValue"
                       value={penaltyMaxValue}
                       onChange={this.handleChange}
+                      InputProps={{
+                        inputProps: { min: 0 }
+                      }}
                       fullWidth
                       required
                     />
